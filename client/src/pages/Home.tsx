@@ -50,7 +50,7 @@ export default function Home() {
         <div className="lg:absolute lg:inset-y-0 lg:right-0 lg:w-1/2">
           <div className="h-56 w-full sm:h-72 md:h-96 lg:w-full lg:h-full overflow-hidden bg-gradient-to-r from-blue-50 to-blue-100">
             <img 
-              src="https://images.unsplash.com/photo-1590674899484-d5640e854abe?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" 
+              src="https://media-hosting.imagekit.io/2b8ac82dd3784305/Screenshot%202025-04-23%20at%208.50.17%E2%80%AFPM.png?Expires=1840063849&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=M6ihqYDYWXpb9nYluh1l44zyA~p205hCCrPnHBtP9PbPYMYd8d5DhKD338dY2GRKO9PVhhcJyP5WLJ380TLObnpeYaije1dHEiYeskYUGmAjFsxANmaRnzKJqwv5sK7VZbGxu67iCjtklQyJcwW7b3e37qh3deBTE6kKTdD-Gy7TpgDoAMwT-nuixUDaLyen1VOUurb32rYGMDUz6cCfh135-DJxvQK35hQ8v0Z1HAy8NmD1PVb46jfyX-XYl0XOVhIbi3-0yEevei3sTXTErLuBwGypA-~I18EGLOkgJhPQlCKIzVqBVpKaA0rTiwb8JMeMzN6gPjJVAh5f9dbrxQ__" 
               alt="Driveway parking" 
               className="w-full h-full object-cover object-center"
             />
