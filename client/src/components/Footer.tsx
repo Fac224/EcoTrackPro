@@ -10,7 +10,7 @@ export function Footer() {
           <div>
             <div className="flex items-center">
               <ParkingMeter className="text-white h-8 w-8 mr-2" />
-              <span className="text-2xl font-bold text-white">ParkShare</span>
+              <span className="text-2xl font-bold text-white">EasyPark</span>
             </div>
             <p className="mt-4 text-base text-gray-400">
               The easiest way to find and book parking spots near you. Or make money by renting out your driveway.
@@ -112,7 +112,7 @@ export function Footer() {
         
         <div className="mt-12 border-t border-gray-700 pt-8">
           <p className="text-base text-gray-400 text-center">
-            &copy; {new Date().getFullYear()} ParkShare. All rights reserved.
+            &copy; {new Date().getFullYear()} EasyPark. All rights reserved.
           </p>
         </div>
       </div>

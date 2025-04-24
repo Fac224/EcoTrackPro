@@ -58,7 +58,7 @@ export default function Home() {
           <div className="lg:text-center">
             <h2 className="text-base text-primary font-semibold tracking-wide uppercase">Easy Process</h2>
             <p className="mt-2 text-3xl leading-8 font-bold tracking-tight text-gray-900 sm:text-4xl">
-              How ParkShare Works
+              How EasyPark Works
             </p>
             <p className="mt-4 max-w-2xl text-xl text-gray-500 lg:mx-auto">
               Save money on parking or earn money by renting out your driveway in just a few simple steps.
@@ -195,7 +195,7 @@ export default function Home() {
                   ))}
                 </div>
               </div>
-              <p className="text-gray-500 italic mb-6">"I saved over $200 last month using ParkShare instead of public garages. The app makes it super easy to find affordable parking near my office."</p>
+              <p className="text-gray-500 italic mb-6">"I saved over $200 last month using EasyPark instead of public garages. The app makes it super easy to find affordable parking near my office."</p>
               <div className="flex items-center">
                 <div className="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center text-gray-600">
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">

@@ -55,13 +55,13 @@ export function Navbar() {
           <div className="flex items-center">
             <Link href="/" className="flex-shrink-0 flex items-center">
               <ParkingMeter className="text-primary h-8 w-8 mr-2" />
-              <span className="text-2xl font-bold text-primary">ParkShare</span>
+              <span className="text-2xl font-bold text-primary">EasyPark</span>
             </Link>
           </div>
           
           <div className="hidden sm:ml-6 sm:flex sm:items-center sm:space-x-8">
             <Link href="/search" className="text-gray-500 hover:text-gray-900 px-3 py-2 text-sm font-medium">
-              Find ParkingMeter
+              Find Parking
             </Link>
             <Link href={user ? "/list-driveway" : "/login"} className="text-gray-500 hover:text-gray-900 px-3 py-2 text-sm font-medium">
               List Your Space
@@ -108,7 +108,7 @@ export function Navbar() {
       <div className={`sm:hidden ${mobileMenuOpen ? '' : 'hidden'}`}>
         <div className="pt-2 pb-3 space-y-1">
           <Link href="/search" className="block px-3 py-2 text-base font-medium text-gray-500 hover:bg-gray-50">
-            Find ParkingMeter
+            Find Parking
           </Link>
           <Link href={user ? "/list-driveway" : "/login"} className="block px-3 py-2 text-base font-medium text-gray-500 hover:bg-gray-50">
             List Your Space
