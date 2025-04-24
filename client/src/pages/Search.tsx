@@ -27,11 +27,11 @@ type SearchFormValues = z.infer<typeof searchFormSchema>;
 
 export default function Search() {
   const [, navigate] = useLocation();
-  const [location] = useLocation();
+  const [currentLocation] = useLocation();
   const [showMap, setShowMap] = useState(false);
   
   // Parse URL query params
-  const params = new URLSearchParams(location.search);
+  const params = new URLSearchParams(currentLocation.search);
   const locationParam = params.get("location") || "";
   const dateParam = params.get("date") || "";
   const startTimeParam = params.get("startTime") || "";
@@ -291,7 +291,7 @@ export default function Search() {
                   markers={displayDriveways.map(driveway => ({
                     lat: driveway.latitude,
                     lng: driveway.longitude,
-                    title: `$${driveway.priceHourly.toFixed(2)}/hr`,
+                    title: `$${driveway.priceHourly.toFixed(2)}/hr - ${driveway.address}`,
                     onClick: () => navigate(`/driveways/${driveway.id}`)
                   }))}
                 />

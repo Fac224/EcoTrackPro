@@ -1,7 +1,8 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Loader2 } from "lucide-react";
 
-// This is a simple map component that would be integrated with a real mapping service like Mapbox or Google Maps
+// Google Maps integration
 interface MapViewProps {
   latitude: number;
   longitude: number;
@@ -19,6 +20,26 @@ interface MapViewProps {
   }>;
 }
 
+// Load Google Maps script
+const loadGoogleMapsScript = (callback: () => void) => {
+  const existingScript = document.getElementById('googleMapsScript');
+  if (!existingScript) {
+    const script = document.createElement('script');
+    // Use the API key directly from the environment variable
+    script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyAanMM_SHlW67y28F-0wAeGWDJ40ocn16A&libraries=places`;
+    script.id = 'googleMapsScript';
+    script.async = true;
+    script.defer = true;
+    document.head.appendChild(script);
+
+    script.onload = () => {
+      if (callback) callback();
+    };
+  } else if (callback) {
+    callback();
+  }
+};
+
 export function MapView({
   latitude,
   longitude,
@@ -31,68 +52,101 @@ export function MapView({
   markers = []
 }: MapViewProps) {
   const mapRef = useRef<HTMLDivElement>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isScriptLoaded, setIsScriptLoaded] = useState(false);
+  const googleMapRef = useRef<google.maps.Map | null>(null);
+  const googleMarkers = useRef<google.maps.Marker[]>([]);
 
+  // Load Google Maps script
   useEffect(() => {
-    // Simulate map loading
-    // In a real implementation, this would initialize a map from a service like Mapbox or Google Maps
-    const mapContainer = mapRef.current;
-    if (!mapContainer) return;
+    loadGoogleMapsScript(() => {
+      setIsScriptLoaded(true);
+    });
+  }, []);
 
-    // If we had a real map API, we would initialize it here
-    const initMap = () => {
-      // This is where we would add the map and markers
-      // For now, we'll just add some placeholder content
-      mapContainer.innerHTML = `
-        <div class="flex items-center justify-center h-full w-full bg-gray-100 rounded-lg relative">
-          <div class="absolute inset-0 overflow-hidden">
-            ${showMarker || markers.length > 0 ? 
-              `<div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-primary">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-8 w-8">
-                  <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path>
-                  <circle cx="12" cy="10" r="3"></circle>
-                </svg>
-              </div>` : ''
-            }
-          </div>
-          <div class="z-10 bg-white p-2 rounded shadow text-sm">
-            Lat: ${latitude.toFixed(4)}, Lng: ${longitude.toFixed(4)}
-          </div>
-        </div>
-      `;
+  // Initialize map
+  useEffect(() => {
+    if (!isScriptLoaded || !mapRef.current) return;
+    
+    setIsLoading(true);
+    
+    try {
+      // Create map
+      const googleMap = new google.maps.Map(mapRef.current, {
+        center: { lat: latitude, lng: longitude },
+        zoom: zoom,
+        disableDefaultUI: true,
+        zoomControl: true,
+        mapTypeControl: false,
+        scaleControl: true,
+        streetViewControl: false,
+        rotateControl: false,
+        fullscreenControl: true
+      });
+      
+      googleMapRef.current = googleMap;
 
-      // Add event listener for map clicks
-      if (onMapClick) {
-        mapContainer.addEventListener('click', (e) => {
-          // Simulate clicking on the map to get coordinates
-          // In a real implementation, we would get the actual coordinates from the map API
-          const rect = mapContainer.getBoundingClientRect();
-          const x = e.clientX - rect.left;
-          const y = e.clientY - rect.top;
-          
-          // Simulate latitude and longitude based on click position
-          const simulatedLat = latitude + (((rect.height / 2) - y) / rect.height) * 0.01;
-          const simulatedLng = longitude + ((x - (rect.width / 2)) / rect.width) * 0.01;
-          
-          onMapClick(simulatedLat, simulatedLng);
+      // Add main marker if specified
+      if (showMarker) {
+        const marker = new google.maps.Marker({
+          position: { lat: latitude, lng: longitude },
+          map: googleMap,
+          animation: google.maps.Animation.DROP,
         });
       }
-    };
 
-    // Initialize the map with a small delay to simulate loading
-    const timer = setTimeout(initMap, 300);
-    
+      // Add markers
+      markers.forEach(marker => {
+        const googleMarker = new google.maps.Marker({
+          position: { lat: marker.lat, lng: marker.lng },
+          map: googleMap,
+          title: marker.title,
+          animation: google.maps.Animation.DROP,
+        });
+
+        if (marker.onClick) {
+          googleMarker.addListener('click', marker.onClick);
+        }
+
+        googleMarkers.current.push(googleMarker);
+      });
+
+      // Add click listener
+      if (onMapClick) {
+        googleMap.addListener('click', (e: google.maps.MapMouseEvent) => {
+          if (e.latLng) {
+            onMapClick(e.latLng.lat(), e.latLng.lng());
+          }
+        });
+      }
+      
+      setIsLoading(false);
+    } catch (error) {
+      console.error('Error initializing Google Maps:', error);
+      setIsLoading(false);
+    }
+
     return () => {
-      clearTimeout(timer);
+      // Cleanup markers
+      googleMarkers.current.forEach(marker => marker.setMap(null));
+      googleMarkers.current = [];
     };
-  }, [latitude, longitude, zoom, showMarker, onMapClick, markers]);
+  }, [latitude, longitude, zoom, showMarker, onMapClick, markers, isScriptLoaded]);
 
   return (
     <div 
-      ref={mapRef}
-      className={`rounded-lg overflow-hidden ${className}`}
+      className={`rounded-lg overflow-hidden relative ${className}`}
       style={{ height, width }}
     >
-      <Skeleton className="h-full w-full" />
+      {isLoading && (
+        <div className="absolute inset-0 flex items-center justify-center bg-gray-100 bg-opacity-70 z-10">
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        </div>
+      )}
+      <div 
+        ref={mapRef}
+        className="h-full w-full"
+      />
     </div>
   );
 }
