@@ -48,7 +48,13 @@ export default function Home() {
           </div>
         </div>
         <div className="lg:absolute lg:inset-y-0 lg:right-0 lg:w-1/2">
-          <div className="h-56 w-full bg-gray-200 sm:h-72 md:h-96 lg:w-full lg:h-full"></div>
+          <div className="h-56 w-full sm:h-72 md:h-96 lg:w-full lg:h-full overflow-hidden bg-gradient-to-r from-blue-50 to-blue-100">
+            <img 
+              src="https://images.unsplash.com/photo-1590674899484-d5640e854abe?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" 
+              alt="Driveway parking" 
+              className="w-full h-full object-cover object-center"
+            />
+          </div>
         </div>
       </div>
 
@@ -247,7 +253,7 @@ export default function Home() {
                   </svg>
                 </div>
               </div>
-              <p className="text-gray-500 italic mb-6">"Finding parking for my daily commute was a nightmare until I found ParkShare. Now I have a guaranteed spot every day at half the price of the nearby garage."</p>
+              <p className="text-gray-500 italic mb-6">"Finding parking for my daily commute was a nightmare until I found EasyPark. Now I have a guaranteed spot every day at half the price of the nearby garage."</p>
               <div className="flex items-center">
                 <div className="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center text-gray-600">
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -285,7 +291,7 @@ export default function Home() {
             <div className="lg:w-1/2">
               <h2 className="text-3xl font-bold text-gray-900 mb-4">Download Our Mobile App</h2>
               <p className="text-lg text-gray-500 mb-8">
-                Get the ParkShare app for iOS and Android. Book parking spots on the go, receive notifications, and manage your listings from anywhere.
+                Get the EasyPark app for iOS and Android. Book parking spots on the go, receive notifications, and manage your listings from anywhere.
               </p>
               <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
                 <Button variant="default" size="lg" className="flex items-center justify-center bg-gray-900 hover:bg-gray-800">
@@ -305,7 +311,13 @@ export default function Home() {
               </div>
             </div>
             <div className="mt-10 lg:mt-0 lg:w-1/2 flex justify-center">
-              <div className="h-auto w-full max-w-sm bg-gray-200 rounded-lg shadow-lg"></div>
+              <div className="h-auto w-full max-w-sm rounded-lg shadow-lg overflow-hidden">
+                <img 
+                  src="https://images.unsplash.com/photo-1551650975-87deedd944c3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" 
+                  alt="EasyPark mobile app" 
+                  className="w-full h-full object-cover"
+                />
+              </div>
             </div>
           </div>
         </div>
