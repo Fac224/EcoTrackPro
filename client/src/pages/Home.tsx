@@ -26,10 +26,11 @@ export default function Home() {
       <Navbar />
       
       {/* Hero Section */}
-      <div className="relative bg-white overflow-hidden">
+      <div className="relative bg-white overflow-hidden pb-16 lg:pb-0">
         <div className="max-w-7xl mx-auto">
-          <div className="relative z-10 bg-white lg:max-w-2xl lg:w-full">
-            <main className="mt-10 mx-auto max-w-7xl px-4 sm:mt-12 sm:px-6 lg:mt-16">
+          <div className="relative z-10 bg-white lg:max-w-2xl lg:w-full lg:pb-28">
+            <div className="lg:absolute lg:top-0 lg:bottom-0 lg:left-0 lg:w-1/2 bg-white"></div>
+            <main className="mx-auto max-w-7xl px-4 pt-10 sm:pt-12 sm:px-6 lg:pt-16">
               <div className="text-center lg:text-left">
                 <h1 className="text-4xl tracking-tight font-bold text-gray-900 sm:text-5xl">
                   <span className="block">Find convenient</span>
@@ -142,15 +143,115 @@ export default function Home() {
             <div className="text-center py-10">
               <p className="text-red-500">Error loading driveways. Please try again later.</p>
             </div>
-          ) : driveways && driveways.length > 0 ? (
+          ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {driveways.slice(0, 3).map((driveway) => (
+              {/* First row - dynamic driveways */}
+              {driveways && driveways.length > 0 && driveways.slice(0, 3).map((driveway) => (
                 <DrivewayCard key={driveway.id} driveway={driveway} />
               ))}
-            </div>
-          ) : (
-            <div className="text-center py-10">
-              <p className="text-gray-500">No driveways available at the moment.</p>
+              
+              {/* Second row - static driveways with real images */}
+              <div className="bg-white rounded-lg shadow-md overflow-hidden">
+                <div className="h-48 w-full relative">
+                  <img 
+                    src="https://images.unsplash.com/photo-1603091791733-9b3b8daddaa0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80" 
+                    alt="Suburban driveway" 
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute top-4 right-4 bg-white px-2 py-1 rounded-full text-sm font-semibold text-primary">
+                    $4.50/hr
+                  </div>
+                </div>
+                <div className="p-4">
+                  <h3 className="font-semibold text-lg mb-1">Spacious Suburban Driveway</h3>
+                  <p className="text-gray-600 text-sm mb-2">567 Oak Avenue, Portland</p>
+                  <div className="flex items-center text-sm text-gray-500 mb-3">
+                    <span className="flex items-center mr-3">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                      Easy access
+                    </span>
+                    <span className="flex items-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                      </svg>
+                      Secure
+                    </span>
+                  </div>
+                  <Link href="/search">
+                    <Button variant="outline" className="w-full">View Details</Button>
+                  </Link>
+                </div>
+              </div>
+              
+              <div className="bg-white rounded-lg shadow-md overflow-hidden">
+                <div className="h-48 w-full relative">
+                  <img 
+                    src="https://images.unsplash.com/photo-1597844710426-aee197cf1854?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80" 
+                    alt="Downtown driveway" 
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute top-4 right-4 bg-white px-2 py-1 rounded-full text-sm font-semibold text-primary">
+                    $6.75/hr
+                  </div>
+                </div>
+                <div className="p-4">
+                  <h3 className="font-semibold text-lg mb-1">Downtown Private Spot</h3>
+                  <p className="text-gray-600 text-sm mb-2">123 Market Street, San Francisco</p>
+                  <div className="flex items-center text-sm text-gray-500 mb-3">
+                    <span className="flex items-center mr-3">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                      </svg>
+                      EV charging
+                    </span>
+                    <span className="flex items-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                      </svg>
+                      24/7 support
+                    </span>
+                  </div>
+                  <Link href="/search">
+                    <Button variant="outline" className="w-full">View Details</Button>
+                  </Link>
+                </div>
+              </div>
+              
+              <div className="bg-white rounded-lg shadow-md overflow-hidden">
+                <div className="h-48 w-full relative">
+                  <img 
+                    src="https://images.unsplash.com/photo-1567358812567-2828d36c3f1b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80" 
+                    alt="Private garage" 
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute top-4 right-4 bg-white px-2 py-1 rounded-full text-sm font-semibold text-primary">
+                    $8.00/hr
+                  </div>
+                </div>
+                <div className="p-4">
+                  <h3 className="font-semibold text-lg mb-1">Covered Garage Parking</h3>
+                  <p className="text-gray-600 text-sm mb-2">456 Pine Road, Seattle</p>
+                  <div className="flex items-center text-sm text-gray-500 mb-3">
+                    <span className="flex items-center mr-3">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
+                      </svg>
+                      Weather protected
+                    </span>
+                    <span className="flex items-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                      </svg>
+                      Premium spot
+                    </span>
+                  </div>
+                  <Link href="/search">
+                    <Button variant="outline" className="w-full">View Details</Button>
+                  </Link>
+                </div>
+              </div>
             </div>
           )}
         </div>
@@ -281,6 +382,17 @@ export default function Home() {
           </div>
           
           <FAQAccordion />
+          
+          <div className="mt-12 text-center">
+            <h3 className="text-lg font-semibold text-gray-900 mb-3">Have more questions?</h3>
+            <p className="text-gray-500 max-w-2xl mx-auto mb-6">
+              Our help center has answers to most questions. If you can't find what you're looking for,
+              our support team is always ready to help.
+            </p>
+            <Button variant="outline" size="lg">
+              Visit Help Center
+            </Button>
+          </div>
         </div>
       </div>
 
