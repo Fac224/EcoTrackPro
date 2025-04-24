@@ -26,11 +26,13 @@ export default function Home() {
       <Navbar />
       
       {/* Hero Section */}
-      <div className="relative bg-white overflow-hidden pb-16 lg:pb-0">
+      <div className="relative bg-white overflow-hidden">
         <div className="max-w-7xl mx-auto">
-          <div className="relative z-10 bg-white lg:max-w-2xl lg:w-full lg:pb-28">
-            <div className="lg:absolute lg:top-0 lg:bottom-0 lg:left-0 lg:w-1/2 bg-white"></div>
-            <main className="mx-auto max-w-7xl px-4 pt-10 sm:pt-12 sm:px-6 lg:pt-16">
+          <div className="relative z-10 bg-white lg:max-w-2xl lg:w-full">
+            <svg className="hidden lg:block absolute right-0 inset-y-0 h-full w-48 text-white transform translate-x-1/2" fill="currentColor" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+              <polygon points="50,0 100,0 50,100 0,100" />
+            </svg>
+            <main className="mx-auto max-w-7xl px-4 pt-10 pb-16 sm:pt-12 sm:px-6 lg:pt-16 lg:pb-28">
               <div className="text-center lg:text-left">
                 <h1 className="text-4xl tracking-tight font-bold text-gray-900 sm:text-5xl">
                   <span className="block">Find convenient</span>
@@ -49,7 +51,7 @@ export default function Home() {
           </div>
         </div>
         <div className="lg:absolute lg:inset-y-0 lg:right-0 lg:w-1/2">
-          <div className="h-56 w-full sm:h-72 md:h-96 lg:w-full lg:h-full overflow-hidden bg-gradient-to-r from-blue-50 to-blue-100">
+          <div className="h-56 w-full sm:h-72 md:h-96 lg:w-full lg:h-full overflow-hidden">
             <img 
               src="https://media-hosting.imagekit.io/2b8ac82dd3784305/Screenshot%202025-04-23%20at%208.50.17%E2%80%AFPM.png?Expires=1840063849&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=M6ihqYDYWXpb9nYluh1l44zyA~p205hCCrPnHBtP9PbPYMYd8d5DhKD338dY2GRKO9PVhhcJyP5WLJ380TLObnpeYaije1dHEiYeskYUGmAjFsxANmaRnzKJqwv5sK7VZbGxu67iCjtklQyJcwW7b3e37qh3deBTE6kKTdD-Gy7TpgDoAMwT-nuixUDaLyen1VOUurb32rYGMDUz6cCfh135-DJxvQK35hQ8v0Z1HAy8NmD1PVb46jfyX-XYl0XOVhIbi3-0yEevei3sTXTErLuBwGypA-~I18EGLOkgJhPQlCKIzVqBVpKaA0rTiwb8JMeMzN6gPjJVAh5f9dbrxQ__" 
               alt="Driveway parking" 
@@ -150,12 +152,12 @@ export default function Home() {
                 <DrivewayCard key={driveway.id} driveway={driveway} />
               ))}
               
-              {/* Second row - static driveways with real images */}
+              {/* Second row - static driveways with real images and addresses */}
               <div className="bg-white rounded-lg shadow-md overflow-hidden">
                 <div className="h-48 w-full relative">
                   <img 
-                    src="https://images.unsplash.com/photo-1603091791733-9b3b8daddaa0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80" 
-                    alt="Suburban driveway" 
+                    src="https://images.unsplash.com/photo-1638359942431-4db98544d532?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80" 
+                    alt="Residential driveway" 
                     className="w-full h-full object-cover"
                   />
                   <div className="absolute top-4 right-4 bg-white px-2 py-1 rounded-full text-sm font-semibold text-primary">
@@ -163,8 +165,8 @@ export default function Home() {
                   </div>
                 </div>
                 <div className="p-4">
-                  <h3 className="font-semibold text-lg mb-1">Spacious Suburban Driveway</h3>
-                  <p className="text-gray-600 text-sm mb-2">567 Oak Avenue, Portland</p>
+                  <h3 className="font-semibold text-lg mb-1">432 Maple Street</h3>
+                  <p className="text-gray-600 text-sm mb-2">Brookfield, IL 60513</p>
                   <div className="flex items-center text-sm text-gray-500 mb-3">
                     <span className="flex items-center mr-3">
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -188,8 +190,8 @@ export default function Home() {
               <div className="bg-white rounded-lg shadow-md overflow-hidden">
                 <div className="h-48 w-full relative">
                   <img 
-                    src="https://images.unsplash.com/photo-1597844710426-aee197cf1854?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80" 
-                    alt="Downtown driveway" 
+                    src="https://images.unsplash.com/photo-1579454983055-ef3eef7ae250?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80" 
+                    alt="Urban garage entry" 
                     className="w-full h-full object-cover"
                   />
                   <div className="absolute top-4 right-4 bg-white px-2 py-1 rounded-full text-sm font-semibold text-primary">
@@ -197,8 +199,8 @@ export default function Home() {
                   </div>
                 </div>
                 <div className="p-4">
-                  <h3 className="font-semibold text-lg mb-1">Downtown Private Spot</h3>
-                  <p className="text-gray-600 text-sm mb-2">123 Market Street, San Francisco</p>
+                  <h3 className="font-semibold text-lg mb-1">1720 Market Street</h3>
+                  <p className="text-gray-600 text-sm mb-2">San Francisco, CA 94102</p>
                   <div className="flex items-center text-sm text-gray-500 mb-3">
                     <span className="flex items-center mr-3">
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -222,8 +224,8 @@ export default function Home() {
               <div className="bg-white rounded-lg shadow-md overflow-hidden">
                 <div className="h-48 w-full relative">
                   <img 
-                    src="https://images.unsplash.com/photo-1567358812567-2828d36c3f1b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80" 
-                    alt="Private garage" 
+                    src="https://images.unsplash.com/photo-1598971861713-54ad16a7e72e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80" 
+                    alt="Covered parking garage" 
                     className="w-full h-full object-cover"
                   />
                   <div className="absolute top-4 right-4 bg-white px-2 py-1 rounded-full text-sm font-semibold text-primary">
@@ -231,8 +233,8 @@ export default function Home() {
                   </div>
                 </div>
                 <div className="p-4">
-                  <h3 className="font-semibold text-lg mb-1">Covered Garage Parking</h3>
-                  <p className="text-gray-600 text-sm mb-2">456 Pine Road, Seattle</p>
+                  <h3 className="font-semibold text-lg mb-1">847 Pine Avenue</h3>
+                  <p className="text-gray-600 text-sm mb-2">Seattle, WA 98101</p>
                   <div className="flex items-center text-sm text-gray-500 mb-3">
                     <span className="flex items-center mr-3">
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
