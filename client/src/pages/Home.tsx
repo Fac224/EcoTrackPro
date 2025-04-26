@@ -5,6 +5,10 @@ import Footer from "@/components/Footer";
 import SearchForm from "@/components/SearchForm";
 import FAQAccordion from "@/components/FAQAccordion";
 import DrivewayCard from "@/components/DrivewayCard";
+import AIAssistant from "@/components/AIAssistant";
+import PersonalizedRecommendations from "@/components/PersonalizedRecommendations";
+import EventParkingRecommendations from "@/components/EventParkingRecommendations";
+import AirportParkingFinder from "@/components/AirportParkingFinder";
 import { useQuery } from "@tanstack/react-query";
 import { Driveway } from "@shared/schema";
 import { 
