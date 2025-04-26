@@ -28,35 +28,33 @@ export default function Home() {
       {/* Hero Section */}
       <div className="relative bg-white overflow-hidden">
         <div className="max-w-7xl mx-auto">
-          <div className="relative z-10 bg-white lg:max-w-2xl lg:w-full">
-            <svg className="hidden lg:block absolute right-0 inset-y-0 h-full w-48 text-white transform translate-x-1/2" fill="currentColor" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-              <polygon points="50,0 100,0 50,100 0,100" />
-            </svg>
-            <main className="mx-auto max-w-7xl px-4 pt-10 pb-16 sm:pt-12 sm:px-6 lg:pt-16 lg:pb-28">
-              <div className="text-center lg:text-left">
+          <div className="flex flex-col-reverse lg:flex-row">
+            <div className="relative z-10 bg-white px-4 py-10 sm:px-6 lg:py-16 lg:w-1/2">
+              <div className="text-center lg:text-left max-w-xl mx-auto lg:mx-0">
                 <h1 className="text-4xl tracking-tight font-bold text-gray-900 sm:text-5xl">
                   <span className="block">Find convenient</span>
                   <span className="block text-primary">parking near you</span>
                 </h1>
-                <p className="mt-3 text-base text-gray-500 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto lg:mx-0">
+                <p className="mt-3 text-base text-gray-500 sm:mt-5 sm:text-lg">
                   Rent a driveway by the hour and save money on parking. Or make money by renting out your unused space.
                 </p>
                 
                 {/* Search Form */}
-                <div className="mt-8 sm:mt-12 lg:mt-8">
+                <div className="mt-8 sm:mt-12">
                   <SearchForm />
                 </div>
               </div>
-            </main>
-          </div>
-        </div>
-        <div className="lg:absolute lg:inset-y-0 lg:right-0 lg:w-1/2">
-          <div className="h-56 w-full sm:h-72 md:h-96 lg:w-full lg:h-full overflow-hidden">
-            <img 
-              src="https://media-hosting.imagekit.io/2b8ac82dd3784305/Screenshot%202025-04-23%20at%208.50.17%E2%80%AFPM.png?Expires=1840063849&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=M6ihqYDYWXpb9nYluh1l44zyA~p205hCCrPnHBtP9PbPYMYd8d5DhKD338dY2GRKO9PVhhcJyP5WLJ380TLObnpeYaije1dHEiYeskYUGmAjFsxANmaRnzKJqwv5sK7VZbGxu67iCjtklQyJcwW7b3e37qh3deBTE6kKTdD-Gy7TpgDoAMwT-nuixUDaLyen1VOUurb32rYGMDUz6cCfh135-DJxvQK35hQ8v0Z1HAy8NmD1PVb46jfyX-XYl0XOVhIbi3-0yEevei3sTXTErLuBwGypA-~I18EGLOkgJhPQlCKIzVqBVpKaA0rTiwb8JMeMzN6gPjJVAh5f9dbrxQ__" 
-              alt="Driveway parking" 
-              className="w-full h-full object-cover object-center"
-            />
+            </div>
+            
+            <div className="lg:w-1/2">
+              <div className="h-56 w-full sm:h-72 md:h-96 lg:h-full overflow-hidden">
+                <img 
+                  src="https://images.unsplash.com/photo-1590674899484-d5640e854abe?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80" 
+                  alt="Driveway parking" 
+                  className="w-full h-full object-cover object-center"
+                />
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -293,81 +291,74 @@ export default function Home() {
             </p>
           </div>
           
-          <div className="mt-10 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-            <div className="bg-white rounded-lg p-6 shadow-md border border-gray-200">
+          <div className="mt-10 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="bg-white rounded-lg shadow-md p-6 border border-gray-100">
               <div className="flex items-center mb-4">
-                <div className="flex text-amber-500">
-                  {[...Array(5)].map((_, i) => (
-                    <svg key={i} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5">
-                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                    </svg>
-                  ))}
+                <img 
+                  src="https://randomuser.me/api/portraits/women/68.jpg" 
+                  alt="User testimonial" 
+                  className="h-12 w-12 rounded-full mr-4"
+                />
+                <div>
+                  <h4 className="text-lg font-medium text-gray-900">Sarah T.</h4>
+                  <div className="flex items-center">
+                    {[...Array(5)].map((_, i) => (
+                      <svg key={i} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5 text-yellow-400">
+                        <path fillRule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clipRule="evenodd" />
+                      </svg>
+                    ))}
+                  </div>
                 </div>
               </div>
-              <p className="text-gray-500 italic mb-6">"I saved over $200 last month using EasyPark instead of public garages. The app makes it super easy to find affordable parking near my office."</p>
-              <div className="flex items-center">
-                <div className="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center text-gray-600">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
-                  </svg>
-                </div>
-                <div className="ml-4">
-                  <h4 className="text-sm font-semibold text-gray-900">Michael R.</h4>
-                  <p className="text-xs text-gray-500">Daily Parker</p>
-                </div>
-              </div>
+              <blockquote className="text-gray-600">
+                "I never thought I could make so much extra money from my unused driveway! EasyPark made it simple to list my space and I've had consistent bookings for months."
+              </blockquote>
             </div>
             
-            <div className="bg-white rounded-lg p-6 shadow-md border border-gray-200">
+            <div className="bg-white rounded-lg shadow-md p-6 border border-gray-100">
               <div className="flex items-center mb-4">
-                <div className="flex text-amber-500">
-                  {[...Array(5)].map((_, i) => (
-                    <svg key={i} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5">
-                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                    </svg>
-                  ))}
+                <img 
+                  src="https://randomuser.me/api/portraits/men/32.jpg" 
+                  alt="User testimonial" 
+                  className="h-12 w-12 rounded-full mr-4"
+                />
+                <div>
+                  <h4 className="text-lg font-medium text-gray-900">Michael R.</h4>
+                  <div className="flex items-center">
+                    {[...Array(5)].map((_, i) => (
+                      <svg key={i} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5 text-yellow-400">
+                        <path fillRule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clipRule="evenodd" />
+                      </svg>
+                    ))}
+                  </div>
                 </div>
               </div>
-              <p className="text-gray-500 italic mb-6">"My driveway was just sitting empty while I was at work. Now I make an extra $400 monthly by renting it out during the day. It's completely passive income!"</p>
-              <div className="flex items-center">
-                <div className="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center text-gray-600">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
-                  </svg>
-                </div>
-                <div className="ml-4">
-                  <h4 className="text-sm font-semibold text-gray-900">Sarah L.</h4>
-                  <p className="text-xs text-gray-500">Driveway Owner</p>
-                </div>
-              </div>
+              <blockquote className="text-gray-600">
+                "Parking in downtown used to be a nightmare. With EasyPark, I find affordable parking within minutes no matter where I'm going. A total game-changer for my commute!"
+              </blockquote>
             </div>
             
-            <div className="bg-white rounded-lg p-6 shadow-md border border-gray-200">
+            <div className="bg-white rounded-lg shadow-md p-6 border border-gray-100">
               <div className="flex items-center mb-4">
-                <div className="flex text-amber-500">
-                  {[...Array(4)].map((_, i) => (
-                    <svg key={i} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5">
-                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                    </svg>
-                  ))}
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5">
-                    <path fillRule="evenodd" d="M12 2l2.5 5.3 5.5 1-4 4.1 1 5.6-5-2.6-5 2.6 1-5.6-4-4.1 5.5-1z" />
-                    <path fillRule="evenodd" d="M12 18.8V2L9.5 7.3 4 8.3l4 4.1-1 5.6 5-2.6z" />
-                  </svg>
+                <img 
+                  src="https://randomuser.me/api/portraits/women/45.jpg" 
+                  alt="User testimonial" 
+                  className="h-12 w-12 rounded-full mr-4"
+                />
+                <div>
+                  <h4 className="text-lg font-medium text-gray-900">Jennifer L.</h4>
+                  <div className="flex items-center">
+                    {[...Array(5)].map((_, i) => (
+                      <svg key={i} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5 text-yellow-400">
+                        <path fillRule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clipRule="evenodd" />
+                      </svg>
+                    ))}
+                  </div>
                 </div>
               </div>
-              <p className="text-gray-500 italic mb-6">"Finding parking for my daily commute was a nightmare until I found EasyPark. Now I have a guaranteed spot every day at half the price of the nearby garage."</p>
-              <div className="flex items-center">
-                <div className="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center text-gray-600">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
-                  </svg>
-                </div>
-                <div className="ml-4">
-                  <h4 className="text-sm font-semibold text-gray-900">David T.</h4>
-                  <p className="text-xs text-gray-500">Regular Commuter</p>
-                </div>
-              </div>
+              <blockquote className="text-gray-600">
+                "When I travel for work, I used to worry about airport parking costs. Now I book a spot through EasyPark for less than half the price of the airport lots. Highly recommend!"
+              </blockquote>
             </div>
           </div>
         </div>
@@ -375,63 +366,55 @@ export default function Home() {
 
       {/* FAQ Section */}
       <div className="py-12 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="lg:text-center mb-10">
-            <h2 className="text-base text-primary font-semibold tracking-wide uppercase">FAQ</h2>
-            <p className="mt-2 text-3xl leading-8 font-bold tracking-tight text-gray-900 sm:text-4xl">
-              Frequently Asked Questions
-            </p>
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-10">
+            <h2 className="text-base text-primary font-semibold tracking-wide uppercase">Questions & Answers</h2>
+            <p className="mt-2 text-3xl font-bold text-gray-900">Frequently Asked Questions</p>
           </div>
           
           <FAQAccordion />
           
-          <div className="mt-12 text-center">
-            <h3 className="text-lg font-semibold text-gray-900 mb-3">Have more questions?</h3>
-            <p className="text-gray-500 max-w-2xl mx-auto mb-6">
-              Our help center has answers to most questions. If you can't find what you're looking for,
-              our support team is always ready to help.
-            </p>
-            <Button variant="outline" size="lg">
-              Visit Help Center
-            </Button>
+          <div className="mt-10 text-center">
+            <p className="text-gray-600 mb-4">Have more questions?</p>
+            <Button variant="outline" className="bg-white">Visit our help center</Button>
           </div>
         </div>
       </div>
 
       {/* App Download */}
-      <div className="py-12 bg-white">
+      <div className="bg-white py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="lg:flex lg:items-center lg:justify-between">
-            <div className="lg:w-1/2">
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">Download Our Mobile App</h2>
-              <p className="text-lg text-gray-500 mb-8">
-                Get the EasyPark app for iOS and Android. Book parking spots on the go, receive notifications, and manage your listings from anywhere.
+            <div className="lg:max-w-xl">
+              <h2 className="text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl">
+                Download the EasyPark app
+              </h2>
+              <p className="mt-3 text-xl text-gray-500">
+                Book and manage your parking spaces on the go. Get real-time notifications and directions right from our mobile app.
               </p>
-              <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
-                <Button variant="default" size="lg" className="flex items-center justify-center bg-gray-900 hover:bg-gray-800">
-                  <Apple className="h-6 w-6 mr-3" />
+              <div className="mt-8 flex space-x-4">
+                <Button className="flex items-center bg-black hover:bg-gray-800 text-white">
+                  <Apple className="h-6 w-6 mr-2" />
                   <div className="text-left">
                     <div className="text-xs">Download on the</div>
-                    <div className="text-sm font-semibold">App Store</div>
+                    <div className="text-base font-medium">App Store</div>
                   </div>
                 </Button>
-                <Button variant="default" size="lg" className="flex items-center justify-center bg-gray-900 hover:bg-gray-800">
-                  <Play className="h-6 w-6 mr-3" />
+                <Button className="flex items-center bg-black hover:bg-gray-800 text-white">
+                  <Play className="h-6 w-6 mr-2" />
                   <div className="text-left">
                     <div className="text-xs">Get it on</div>
-                    <div className="text-sm font-semibold">Google Play</div>
+                    <div className="text-base font-medium">Google Play</div>
                   </div>
                 </Button>
               </div>
             </div>
-            <div className="mt-10 lg:mt-0 lg:w-1/2 flex justify-center">
-              <div className="h-auto w-full max-w-sm rounded-lg shadow-lg overflow-hidden">
-                <img 
-                  src="https://images.unsplash.com/photo-1551650975-87deedd944c3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" 
-                  alt="EasyPark mobile app" 
-                  className="w-full h-full object-cover"
-                />
-              </div>
+            <div className="mt-10 lg:mt-0">
+              <img 
+                src="https://images.unsplash.com/photo-1616169201999-0fe189c680fa?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80" 
+                alt="Mobile app" 
+                className="rounded-lg shadow-xl max-w-xs mx-auto"
+              />
             </div>
           </div>
         </div>
