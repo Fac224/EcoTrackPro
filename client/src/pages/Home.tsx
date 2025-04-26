@@ -385,6 +385,31 @@ export default function Home() {
         </div>
       </div>
 
+      {/* AI Powered Features Section */}
+      <div className="bg-gradient-to-b from-white to-blue-50 py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-base text-primary font-semibold tracking-wide uppercase">AI Powered Features</h2>
+            <p className="mt-2 text-3xl leading-8 font-bold tracking-tight text-gray-900 sm:text-4xl">
+              Smarter Parking Solutions
+            </p>
+            <p className="mt-4 max-w-2xl text-xl text-gray-500 mx-auto">
+              Our AI technology helps you find the perfect parking spot based on your specific needs
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div>
+              <EventParkingRecommendations />
+            </div>
+            <div className="space-y-8">
+              <PersonalizedRecommendations />
+              <AirportParkingFinder />
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* App Download */}
       <div className="bg-white py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -423,6 +448,9 @@ export default function Home() {
           </div>
         </div>
       </div>
+      
+      {/* Add the AI Assistant component */}
+      <AIAssistant initialOpen={false} />
 
       <Footer />
     </div>

@@ -100,16 +100,15 @@ export function AirportParkingFinder({ className }: AirportParkingFinderProps) {
         <CardDescription>
           Find convenient and affordable airport parking options
         </CardDescription>
-
-        <Tabs defaultValue="search" value={activeTab} onValueChange={setActiveTab} className="mt-2">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="search">Search</TabsTrigger>
-            <TabsTrigger value="results" disabled={!hasSearched}>Results</TabsTrigger>
-          </TabsList>
-        </Tabs>
       </CardHeader>
 
-      <TabsContent value="search" className="mt-0 p-0">
+      <Tabs defaultValue="search" value={activeTab} onValueChange={setActiveTab}>
+        <TabsList className="mx-4 mb-4 grid w-full grid-cols-2">
+          <TabsTrigger value="search">Search</TabsTrigger>
+          <TabsTrigger value="results" disabled={!hasSearched}>Results</TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="search" className="mt-0 p-0">
         <CardContent className="pt-6">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">

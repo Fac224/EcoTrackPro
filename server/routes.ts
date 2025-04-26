@@ -1,7 +1,7 @@
 import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { ZodError } from "zod";
+import { ZodError, z } from "zod";
 import { 
   insertUserSchema,
   insertDrivewaySchema,
@@ -10,6 +10,12 @@ import {
   searchSchema,
   loginSchema
 } from "@shared/schema";
+import {
+  processUserQuery,
+  generateParkingRecommendations,
+  generatePersonalizedSuggestions,
+  AIFeatureType
+} from "./ai";
 import session from "express-session";
 import MemoryStore from "memorystore";
 
@@ -343,9 +349,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Driveway not found" });
       }
       
-      // Verify ownership of the driveway
+      // Verify ownership
       if (driveway.ownerId !== req.session.userId) {
-        return res.status(403).json({ message: "Not authorized to view these bookings" });
+        return res.status(403).json({ message: "Not authorized to view bookings for this driveway" });
       }
       
       const bookings = await storage.getDrivewayBookings(drivewayId);
@@ -355,7 +361,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/bookings/:id/cancel", isAuthenticated, async (req, res) => {
+  app.put("/api/bookings/:id", isAuthenticated, async (req, res) => {
     try {
       const bookingId = parseInt(req.params.id);
       const booking = await storage.getBooking(bookingId);
@@ -364,7 +370,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Booking not found" });
       }
       
-      // Verify it's the user's booking
+      // Only the driveway owner can update booking status
+      const driveway = await storage.getDriveway(booking.drivewayId);
+      if (driveway?.ownerId !== req.session.userId) {
+        return res.status(403).json({ message: "Not authorized to update this booking" });
+      }
+      
+      const { status } = z.object({ status: z.string() }).parse(req.body);
+      const updatedBooking = await storage.updateBookingStatus(bookingId, status);
+      
+      return res.status(200).json(updatedBooking);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        return handleZodError(error, res);
+      }
+      return res.status(500).json({ message: "Failed to update booking" });
+    }
+  });
+
+  app.delete("/api/bookings/:id", isAuthenticated, async (req, res) => {
+    try {
+      const bookingId = parseInt(req.params.id);
+      const booking = await storage.getBooking(bookingId);
+      
+      if (!booking) {
+        return res.status(404).json({ message: "Booking not found" });
+      }
+      
+      // Only the user who made the booking can cancel it
       if (booking.userId !== req.session.userId) {
         return res.status(403).json({ message: "Not authorized to cancel this booking" });
       }
@@ -377,6 +410,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Review routes
+  app.get("/api/driveways/:id/reviews", async (req, res) => {
+    try {
+      const drivewayId = parseInt(req.params.id);
+      const reviews = await storage.getDrivewayReviews(drivewayId);
+      return res.status(200).json(reviews);
+    } catch (error) {
+      return res.status(500).json({ message: "Failed to get driveway reviews" });
+    }
+  });
+
   app.post("/api/reviews", isAuthenticated, async (req, res) => {
     try {
       const reviewData = insertReviewSchema.parse(req.body);
@@ -384,20 +427,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Assign current user
       reviewData.userId = req.session.userId as number;
       
-      // Check if booking exists and belongs to user
-      const booking = await storage.getBooking(reviewData.bookingId);
-      if (!booking) {
-        return res.status(404).json({ message: "Booking not found" });
-      }
-      
-      if (booking.userId !== req.session.userId) {
-        return res.status(403).json({ message: "Not authorized to review this booking" });
-      }
-      
       // Check if driveway exists
       const driveway = await storage.getDriveway(reviewData.drivewayId);
       if (!driveway) {
         return res.status(404).json({ message: "Driveway not found" });
+      }
+      
+      // Check if the user has booked this driveway
+      const userBookings = await storage.getUserBookings(req.session.userId as number);
+      const hasBookedDriveway = userBookings.some((booking) => booking.drivewayId === reviewData.drivewayId);
+      
+      if (!hasBookedDriveway) {
+        return res.status(403).json({ message: "You can only review driveways you have booked" });
       }
       
       const review = await storage.createReview(reviewData);
@@ -410,21 +451,135 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/driveways/:id/reviews", async (req, res) => {
+  // AI Assistant Routes
+  app.post("/api/ai/assistant", async (req, res) => {
     try {
-      const drivewayId = parseInt(req.params.id);
-      const driveway = await storage.getDriveway(drivewayId);
+      const { query } = z.object({ query: z.string() }).parse(req.body);
       
-      if (!driveway) {
-        return res.status(404).json({ message: "Driveway not found" });
+      // Get user context if authenticated
+      let userContext;
+      if (req.session && req.session.userId) {
+        try {
+          const user = await storage.getUser(req.session.userId as number);
+          const userBookings = await storage.getUserBookings(req.session.userId as number);
+          
+          if (user) {
+            userContext = {
+              username: user.username,
+              userId: user.id,
+              pastBookings: userBookings.length,
+            };
+          }
+        } catch (error) {
+          console.error("Error getting user context:", error);
+        }
       }
       
-      const reviews = await storage.getDrivewayReviews(drivewayId);
-      return res.status(200).json(reviews);
+      const response = await processUserQuery(query, userContext);
+      res.json(response);
     } catch (error) {
-      return res.status(500).json({ message: "Failed to get driveway reviews" });
+      if (error instanceof ZodError) {
+        return handleZodError(error, res);
+      }
+      return res.status(500).json({ message: "Failed to process AI query" });
     }
   });
 
+  app.post("/api/ai/event-parking", async (req, res) => {
+    try {
+      const { query } = z.object({ query: z.string() }).parse(req.body);
+      
+      // Force the query type to be event parking
+      const response = await processUserQuery(query, undefined, AIFeatureType.EVENT_PARKING);
+      res.json(response);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        return handleZodError(error, res);
+      }
+      return res.status(500).json({ message: "Failed to process event parking query" });
+    }
+  });
+
+  app.post("/api/ai/airport-travel", async (req, res) => {
+    try {
+      const { query } = z.object({ query: z.string() }).parse(req.body);
+      
+      // Force the query type to be airport travel
+      const response = await processUserQuery(query, undefined, AIFeatureType.AIRPORT_TRAVEL);
+      res.json(response);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        return handleZodError(error, res);
+      }
+      return res.status(500).json({ message: "Failed to process airport travel query" });
+    }
+  });
+
+  app.post("/api/ai/commuter-parking", async (req, res) => {
+    try {
+      const { query } = z.object({ query: z.string() }).parse(req.body);
+      
+      // Force the query type to be commuter parking
+      const response = await processUserQuery(query, undefined, AIFeatureType.COMMUTER_PARKING);
+      res.json(response);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        return handleZodError(error, res);
+      }
+      return res.status(500).json({ message: "Failed to process commuter parking query" });
+    }
+  });
+
+  app.post("/api/ai/recommendations", async (req, res) => {
+    try {
+      const { location, preferences } = z.object({
+        location: z.string(),
+        preferences: z.object({
+          eventType: z.string().optional(),
+          priceRange: z.string().optional(),
+          amenities: z.array(z.string()).optional(),
+          timeNeeded: z.string().optional()
+        }).optional()
+      }).parse(req.body);
+      
+      const recommendations = await generateParkingRecommendations(location, preferences);
+      res.json(recommendations);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        return handleZodError(error, res);
+      }
+      return res.status(500).json({ message: "Failed to generate recommendations" });
+    }
+  });
+
+  app.get("/api/ai/personalized", isAuthenticated, async (req, res) => {
+    try {
+      const userId = req.session.userId as number;
+      
+      // Gather user history for personalization
+      const userBookings = await storage.getUserBookings(userId);
+      
+      // Format booking data for the AI
+      const pastBookings = userBookings.map(booking => ({
+        location: booking.location || "Unknown location",
+        date: booking.date || new Date().toISOString().slice(0, 10),
+        duration: booking.duration || "Unknown duration"
+      }));
+      
+      // In a real app, you would have user's search history
+      const searchHistory = ["Downtown parking", "Airport long-term"];
+      
+      const suggestions = await generatePersonalizedSuggestions(userId, {
+        pastBookings,
+        searchHistory
+      });
+      
+      res.json(suggestions);
+    } catch (error) {
+      return res.status(500).json({ message: "Failed to generate personalized suggestions" });
+    }
+  });
+
+  // Return HTTP server
   return httpServer;
 }
