@@ -304,6 +304,7 @@ export function AirportParkingFinder({ className }: AirportParkingFinderProps) {
           )}
         </CardContent>
       </TabsContent>
+      </Tabs>
 
       <CardFooter className="border-t flex justify-between bg-gray-50 p-3">
         <Button 
