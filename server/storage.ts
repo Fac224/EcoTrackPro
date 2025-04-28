@@ -301,14 +301,6 @@ export class MemStorage implements IStorage {
       phoneNumber: "555-987-6543",
     };
     
-    const felix: InsertUser = {
-      username: "felix.chong",
-      email: "felix.chong@pursuit.org",
-      password: "1234",
-      name: "Felix Chong",
-      phoneNumber: "555-456-7890",
-    };
-    
     this.createUser(user1).then(user => {
       // Create sample driveways for user1
       const driveway1: InsertDriveway = {
@@ -328,27 +320,6 @@ export class MemStorage implements IStorage {
       };
       
       this.createDriveway(driveway1);
-    });
-    
-    this.createUser(felix).then(user => {
-      // Create sample driveways for Felix
-      const driveway4: InsertDriveway = {
-        ownerId: user.id,
-        address: "1010 Pine St",
-        city: "New York",
-        state: "NY",
-        zipCode: "10001",
-        latitude: 40.7128,
-        longitude: -74.0060,
-        priceHourly: 6.50,
-        description: "Prime location in the heart of NYC, near major attractions",
-        availabilityStartTime: "07:00",
-        availabilityEndTime: "22:00",
-        availableWeekdays: "0,1,2,3,4,5,6",
-        isActive: true,
-      };
-      
-      this.createDriveway(driveway4);
     });
     
     this.createUser(user2).then(user => {

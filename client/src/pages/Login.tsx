@@ -43,8 +43,8 @@ export default function Login() {
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      username: "felix.chong",
-      password: "1234",
+      username: "",
+      password: "",
     },
   });
   
@@ -93,7 +93,7 @@ export default function Login() {
       <div className="container flex justify-center pt-8">
         <Link href="/" className="flex items-center">
           <ParkingMeter className="text-primary h-8 w-8 mr-2" />
-          <span className="text-2xl font-bold text-primary">EasyPark</span>
+          <span className="text-2xl font-bold text-primary">ParkShare</span>
         </Link>
       </div>
       

@@ -10,9 +10,6 @@ import ListDriveway from "@/pages/ListDriveway";
 import Search from "@/pages/Search";
 import DrivewayDetails from "@/pages/DrivewayDetails";
 import BookingPage from "@/pages/BookingPage";
-import HowItWorks from "@/pages/HowItWorks";
-import LearnMore from "@/pages/LearnMore";
-import HelpCenter from "@/pages/HelpCenter";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
@@ -53,9 +50,6 @@ function App() {
         <Route path="/search" component={Search} />
         <Route path="/driveways/:id" component={DrivewayDetails} />
         <Route path="/book/:id" component={BookingPage} />
-        <Route path="/how-it-works" component={HowItWorks} />
-        <Route path="/learn-more" component={LearnMore} />
-        <Route path="/help-center" component={HelpCenter} />
         <Route component={NotFound} />
       </Switch>
     </TooltipProvider>
