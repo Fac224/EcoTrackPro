@@ -43,8 +43,8 @@ export default function Login() {
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      username: "",
-      password: "",
+      username: "felix.chong",
+      password: "1234",
     },
   });
   

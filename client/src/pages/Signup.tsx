@@ -57,8 +57,8 @@ export default function Signup() {
     defaultValues: {
       username: "",
       email: "",
-      password: "",
-      confirmPassword: "",
+      password: "12341234",
+      confirmPassword: "12341234",
       name: "",
       phoneNumber: "",
     },
