@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { BankNote, Shield, Clock, Star, MessageSquare, Calendar } from "lucide-react";
+import { Banknote, Shield, Clock, Star, MessageSquare, Calendar } from "lucide-react";
 
 export default function LearnMore() {
   return (
@@ -56,7 +56,7 @@ export default function LearnMore() {
                 <div className="-mt-6">
                   <div>
                     <span className="inline-flex items-center justify-center p-3 bg-primary rounded-md shadow-lg">
-                      <BankNote className="h-6 w-6 text-white" />
+                      <Banknote className="h-6 w-6 text-white" />
                     </span>
                   </div>
                   <h3 className="mt-8 text-lg font-medium text-gray-900 tracking-tight">Earn Extra Income</h3>

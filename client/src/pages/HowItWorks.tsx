@@ -2,7 +2,7 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { Search, CalendarCheck, Car, UserCheck, BankNote, LocateFixed } from "lucide-react";
+import { Search, CalendarCheck, Car, UserCheck, Banknote, LocateFixed } from "lucide-react";
 
 export default function HowItWorks() {
   return (
@@ -108,7 +108,7 @@ export default function HowItWorks() {
             
             <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
               <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-4 mx-auto">
-                <BankNote className="h-6 w-6 text-primary" />
+                <Banknote className="h-6 w-6 text-primary" />
               </div>
               <h3 className="text-xl font-semibold text-center mb-3">3. Earn</h3>
               <p className="text-gray-600 text-center">

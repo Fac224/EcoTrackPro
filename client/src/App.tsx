@@ -53,6 +53,9 @@ function App() {
         <Route path="/search" component={Search} />
         <Route path="/driveways/:id" component={DrivewayDetails} />
         <Route path="/book/:id" component={BookingPage} />
+        <Route path="/how-it-works" component={HowItWorks} />
+        <Route path="/learn-more" component={LearnMore} />
+        <Route path="/help-center" component={HelpCenter} />
         <Route component={NotFound} />
       </Switch>
     </TooltipProvider>
