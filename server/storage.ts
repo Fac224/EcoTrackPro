@@ -83,7 +83,17 @@ export class MemStorage implements IStorage {
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = this.currentUserId++;
     const createdAt = new Date();
-    const user: User = { ...insertUser, id, createdAt };
+    
+    // Ensure that phoneNumber is a string or null, not undefined
+    const phoneNumber = insertUser.phoneNumber || null;
+    
+    const user: User = { 
+      ...insertUser, 
+      id, 
+      createdAt, 
+      phoneNumber 
+    };
+    
     this.users.set(id, user);
     return user;
   }
@@ -170,7 +180,19 @@ export class MemStorage implements IStorage {
   async createDriveway(driveway: InsertDriveway): Promise<Driveway> {
     const id = this.currentDrivewayId++;
     const createdAt = new Date();
-    const newDriveway: Driveway = { ...driveway, id, createdAt };
+    
+    // Ensure description is a string or null, not undefined
+    const description = driveway.description || null;
+    const isActive = driveway.isActive ?? true;
+    
+    const newDriveway: Driveway = { 
+      ...driveway, 
+      id, 
+      createdAt, 
+      description,
+      isActive
+    };
+    
     this.driveways.set(id, newDriveway);
     return newDriveway;
   }
@@ -254,7 +276,17 @@ export class MemStorage implements IStorage {
   async createReview(review: InsertReview): Promise<Review> {
     const id = this.currentReviewId++;
     const createdAt = new Date();
-    const newReview: Review = { ...review, id, createdAt };
+    
+    // Ensure comment is a string or null, not undefined
+    const comment = review.comment || null;
+    
+    const newReview: Review = { 
+      ...review, 
+      id, 
+      createdAt,
+      comment
+    };
+    
     this.reviews.set(id, newReview);
     return newReview;
   }

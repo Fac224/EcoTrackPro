@@ -61,8 +61,9 @@ export const reviews = pgTable("reviews", {
 export const insertUserSchema = createInsertSchema(users)
   .omit({ id: true, createdAt: true })
   .extend({
-    password: z.string().min(8, "Password must be at least 8 characters"),
+    password: z.string().min(6, "Password must be at least 6 characters"),
     email: z.string().email("Please enter a valid email"),
+    phoneNumber: z.string().optional(),
   });
 
 // Driveway schemas
