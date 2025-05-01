@@ -1,10 +1,19 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Star, Sparkles, Navigation, Calendar, Clock, ArrowRight, MapPin, Bookmark } from "lucide-react";
-import { apiRequest } from "@/lib/queryClient";
+import { 
+  Star, 
+  Sparkles, 
+  Navigation, 
+  Calendar, 
+  Clock, 
+  ArrowRight, 
+  MapPin, 
+  Bookmark, 
+  Search 
+} from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
 
@@ -18,8 +27,13 @@ interface PersonalizedSuggestion {
 export function PersonalizedRecommendations() {
   const [activeTab, setActiveTab] = useState("suggestions");
 
+  // Define the response type
+  interface PersonalizedResponse {
+    suggestions: PersonalizedSuggestion[];
+  }
+
   // Fetch personalized suggestions from AI
-  const { data, isLoading, error, refetch } = useQuery({
+  const { data, isLoading, error, refetch } = useQuery<PersonalizedResponse>({
     queryKey: ['/api/ai/personalized'],
     // Only run this query if the user is logged in (will return 401 otherwise)
     retry: false,
@@ -41,10 +55,10 @@ export function PersonalizedRecommendations() {
       reason: "Best value for regular commuters"
     },
     {
-      type: "airport",
-      title: "Holiday Airport Parking",
-      description: "Book airport parking early for upcoming holiday travel dates.",
-      reason: "Limited availability during peak season"
+      type: "neighborhood",
+      title: "Downtown Parking Spots",
+      description: "Discover high-rated parking options in prime downtown locations.",
+      reason: "Highly rated by other users"
     }
   ];
 
@@ -124,22 +138,45 @@ export function PersonalizedRecommendations() {
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {suggestions.map((suggestion, index) => (
-                    <div key={index} className="flex items-start">
-                      <div className="mt-1 mr-3 flex-shrink-0">
-                        {getSuggestionIcon(suggestion.type)}
-                      </div>
-                      <div>
-                        <h3 className="font-medium text-gray-900 leading-tight flex items-center">
-                          {suggestion.title}
-                          <Badge variant="outline" className="ml-2 text-xs">
-                            {suggestion.type}
-                          </Badge>
-                        </h3>
-                        <p className="text-sm text-gray-600 mt-1">{suggestion.description}</p>
-                        <p className="text-xs text-gray-500 mt-1 italic">
-                          {suggestion.reason}
-                        </p>
+                  {suggestions.map((suggestion: PersonalizedSuggestion, index: number) => (
+                    <div key={index} className="flex flex-col border-b pb-4 last:border-0 last:pb-0">
+                      <div className="flex items-start">
+                        <div className="mt-1 mr-3 flex-shrink-0">
+                          {getSuggestionIcon(suggestion.type)}
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="font-medium text-gray-900 leading-tight flex items-center">
+                            {suggestion.title}
+                            <Badge variant="outline" className="ml-2 text-xs">
+                              {suggestion.type}
+                            </Badge>
+                          </h3>
+                          <p className="text-sm text-gray-600 mt-1">{suggestion.description}</p>
+                          <p className="text-xs text-gray-500 mt-1 italic">
+                            {suggestion.reason}
+                          </p>
+                          
+                          <div className="flex mt-3 space-x-2">
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              asChild
+                            >
+                              <Link href={`/search?q=${encodeURIComponent(suggestion.title)}`}>
+                                <Search className="h-3.5 w-3.5 mr-1" />
+                                Find spots
+                              </Link>
+                            </Button>
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              className="text-primary"
+                            >
+                              <Bookmark className="h-3.5 w-3.5 mr-1" />
+                              Save
+                            </Button>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   ))}
@@ -151,59 +188,128 @@ export function PersonalizedRecommendations() {
           <TabsContent value="trending" className="m-0">
             <CardContent className="pt-4">
               <div className="space-y-4">
-                <div className="flex items-start">
-                  <div className="mt-1 mr-3 flex-shrink-0">
-                    <Star className="h-5 w-5 text-amber-500" />
-                  </div>
-                  <div>
-                    <h3 className="font-medium text-gray-900 leading-tight">
-                      Downtown Concert Venues
-                      <Badge variant="outline" className="ml-2 text-xs">trending</Badge>
-                    </h3>
-                    <p className="text-sm text-gray-600 mt-1">
-                      High demand for parking near downtown music venues this weekend.
-                    </p>
-                    <div className="flex items-center mt-1 text-xs text-gray-500">
-                      <MapPin className="h-3 w-3 mr-1" />
-                      Downtown Arts District
+                <div className="flex flex-col border-b pb-4 space-y-1">
+                  <div className="flex items-start">
+                    <div className="mt-1 mr-3 flex-shrink-0">
+                      <Star className="h-5 w-5 text-amber-500" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="font-medium text-gray-900 leading-tight">
+                        Downtown Concert Venues
+                        <Badge variant="outline" className="ml-2 text-xs">trending</Badge>
+                      </h3>
+                      <p className="text-sm text-gray-600 mt-1">
+                        High demand for parking near downtown music venues this weekend.
+                      </p>
+                      <div className="flex items-center mt-1 text-xs text-gray-500">
+                        <MapPin className="h-3 w-3 mr-1" />
+                        Downtown Arts District
+                      </div>
+                      
+                      <div className="flex mt-3 space-x-2">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          asChild
+                        >
+                          <Link href={`/search?location=Downtown+Arts+District`}>
+                            <Search className="h-3.5 w-3.5 mr-1" />
+                            View spots
+                          </Link>
+                        </Button>
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          className="text-primary"
+                        >
+                          <Bookmark className="h-3.5 w-3.5 mr-1" />
+                          Save
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 </div>
                 
-                <div className="flex items-start">
-                  <div className="mt-1 mr-3 flex-shrink-0">
-                    <Calendar className="h-5 w-5 text-blue-500" />
-                  </div>
-                  <div>
-                    <h3 className="font-medium text-gray-900 leading-tight">
-                      Championship Game Parking
-                      <Badge variant="outline" className="ml-2 text-xs">popular</Badge>
-                    </h3>
-                    <p className="text-sm text-gray-600 mt-1">
-                      Reserve now for the upcoming championship game - spots filling quickly!
-                    </p>
-                    <div className="flex items-center mt-1 text-xs text-gray-500">
-                      <MapPin className="h-3 w-3 mr-1" />
-                      Stadium District
+                <div className="flex flex-col border-b pb-4 space-y-1">
+                  <div className="flex items-start">
+                    <div className="mt-1 mr-3 flex-shrink-0">
+                      <Calendar className="h-5 w-5 text-blue-500" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="font-medium text-gray-900 leading-tight">
+                        Championship Game Parking
+                        <Badge variant="outline" className="ml-2 text-xs">popular</Badge>
+                      </h3>
+                      <p className="text-sm text-gray-600 mt-1">
+                        Reserve now for the upcoming championship game - spots filling quickly!
+                      </p>
+                      <div className="flex items-center mt-1 text-xs text-gray-500">
+                        <MapPin className="h-3 w-3 mr-1" />
+                        Stadium District
+                      </div>
+                      
+                      <div className="flex mt-3 space-x-2">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          asChild
+                        >
+                          <Link href={`/search?location=Stadium+District`}>
+                            <Search className="h-3.5 w-3.5 mr-1" />
+                            View spots
+                          </Link>
+                        </Button>
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          className="text-primary"
+                        >
+                          <Bookmark className="h-3.5 w-3.5 mr-1" />
+                          Save
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 </div>
                 
-                <div className="flex items-start">
-                  <div className="mt-1 mr-3 flex-shrink-0">
-                    <Navigation className="h-5 w-5 text-indigo-500" />
-                  </div>
-                  <div>
-                    <h3 className="font-medium text-gray-900 leading-tight">
-                      Airport Holiday Parking
-                      <Badge variant="outline" className="ml-2 text-xs">limited</Badge>
-                    </h3>
-                    <p className="text-sm text-gray-600 mt-1">
-                      Holiday travel season is approaching - book airport parking in advance.
-                    </p>
-                    <div className="flex items-center mt-1 text-xs text-gray-500">
-                      <MapPin className="h-3 w-3 mr-1" />
-                      International Airport
+                <div className="flex flex-col space-y-1">
+                  <div className="flex items-start">
+                    <div className="mt-1 mr-3 flex-shrink-0">
+                      <Star className="h-5 w-5 text-indigo-500" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="font-medium text-gray-900 leading-tight">
+                        Downtown Garage Parking
+                        <Badge variant="outline" className="ml-2 text-xs">best rated</Badge>
+                      </h3>
+                      <p className="text-sm text-gray-600 mt-1">
+                        Highly-rated secure parking facilities in the downtown area.
+                      </p>
+                      <div className="flex items-center mt-1 text-xs text-gray-500">
+                        <MapPin className="h-3 w-3 mr-1" />
+                        Financial District
+                      </div>
+                      
+                      <div className="flex mt-3 space-x-2">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          asChild
+                        >
+                          <Link href={`/search?location=Financial+District`}>
+                            <Search className="h-3.5 w-3.5 mr-1" />
+                            View spots
+                          </Link>
+                        </Button>
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          className="text-primary"
+                        >
+                          <Bookmark className="h-3.5 w-3.5 mr-1" />
+                          Save
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 </div>
