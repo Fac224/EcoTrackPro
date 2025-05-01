@@ -10,7 +10,6 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
 import { MapPin, Calendar, Clock, Search } from "lucide-react";
-import MapSearchModal from "./MapSearchModal";
 
 const searchFormSchema = searchSchema.extend({
   date: z.string().optional(),
@@ -20,19 +19,8 @@ const searchFormSchema = searchSchema.extend({
 
 type SearchFormValues = z.infer<typeof searchFormSchema>;
 
-interface SearchFormProps {
-  useModal?: boolean;
-}
-
-export function SearchForm({ useModal = true }: SearchFormProps) {
+export function SearchForm() {
   const [, navigate] = useLocation();
-  const [isMapModalOpen, setIsMapModalOpen] = useState(false);
-  const [searchParams, setSearchParams] = useState<SearchFormValues>({
-    location: "",
-    date: "",
-    startTime: "",
-    endTime: ""
-  });
   
   // Create form
   const form = useForm<SearchFormValues>({
@@ -59,44 +47,86 @@ export function SearchForm({ useModal = true }: SearchFormProps) {
   });
 
   function onSubmit(values: SearchFormValues) {
-    if (useModal) {
-      // Open map modal with search parameters
-      setSearchParams(values);
-      setIsMapModalOpen(true);
-    } else {
-      // Traditional navigation to search page with query params
-      const params = new URLSearchParams();
-      
-      if (values.location) params.append("location", values.location);
-      if (values.date) params.append("date", values.date);
-      if (values.startTime) params.append("startTime", values.startTime);
-      if (values.endTime) params.append("endTime", values.endTime);
-      
-      navigate(`/search?${params.toString()}`);
-    }
+    // Build query string from form values
+    const params = new URLSearchParams();
+    
+    if (values.location) params.append("location", values.location);
+    if (values.date) params.append("date", values.date);
+    if (values.startTime) params.append("startTime", values.startTime);
+    if (values.endTime) params.append("endTime", values.endTime);
+    
+    // Navigate to search results page with query params
+    navigate(`/search?${params.toString()}`);
   }
 
   return (
-    <>
-      <Card className="bg-white rounded-xl shadow-md border border-gray-200">
-        <CardContent className="pt-6">
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 lg:space-y-0 lg:grid lg:grid-cols-4 lg:gap-4">
+    <Card className="bg-white rounded-xl shadow-md border border-gray-200">
+      <CardContent className="pt-6">
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 lg:space-y-0 lg:grid lg:grid-cols-4 lg:gap-4">
+            <FormField
+              control={form.control}
+              name="location"
+              render={({ field }) => (
+                <FormItem className="relative">
+                  <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none z-10">
+                    <MapPin className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <FormControl>
+                    <Input
+                      placeholder="Where do you need parking?"
+                      className="pl-10"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            <FormField
+              control={form.control}
+              name="date"
+              render={({ field }) => (
+                <FormItem className="relative">
+                  <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none z-10">
+                    <Calendar className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <FormControl>
+                    <Input
+                      type="date"
+                      className="pl-10"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            
+            <div className="grid grid-cols-2 gap-2">
               <FormField
                 control={form.control}
-                name="location"
+                name="startTime"
                 render={({ field }) => (
                   <FormItem className="relative">
                     <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none z-10">
-                      <MapPin className="h-5 w-5 text-gray-400" />
+                      <Clock className="h-5 w-5 text-gray-400" />
                     </div>
-                    <FormControl>
-                      <Input
-                        placeholder="Where do you need parking?"
-                        className="pl-10"
-                        {...field}
-                      />
-                    </FormControl>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger className="pl-10">
+                          <SelectValue placeholder="From" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {timeOptions.map((time) => (
+                          <SelectItem key={time.value} value={time.value}>
+                            {time.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -104,93 +134,37 @@ export function SearchForm({ useModal = true }: SearchFormProps) {
               
               <FormField
                 control={form.control}
-                name="date"
+                name="endTime"
                 render={({ field }) => (
-                  <FormItem className="relative">
-                    <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none z-10">
-                      <Calendar className="h-5 w-5 text-gray-400" />
-                    </div>
-                    <FormControl>
-                      <Input
-                        type="date"
-                        className="pl-10"
-                        {...field}
-                      />
-                    </FormControl>
+                  <FormItem>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="To" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {timeOptions.map((time) => (
+                          <SelectItem key={time.value} value={time.value}>
+                            {time.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              
-              <div className="grid grid-cols-2 gap-2">
-                <FormField
-                  control={form.control}
-                  name="startTime"
-                  render={({ field }) => (
-                    <FormItem className="relative">
-                      <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none z-10">
-                        <Clock className="h-5 w-5 text-gray-400" />
-                      </div>
-                      <Select onValueChange={field.onChange} value={field.value || ""}>
-                        <FormControl>
-                          <SelectTrigger className="pl-10">
-                            <SelectValue placeholder="From" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {timeOptions.map((time) => (
-                            <SelectItem key={time.value} value={time.value}>
-                              {time.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                
-                <FormField
-                  control={form.control}
-                  name="endTime"
-                  render={({ field }) => (
-                    <FormItem>
-                      <Select onValueChange={field.onChange} value={field.value || ""}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="To" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {timeOptions.map((time) => (
-                            <SelectItem key={time.value} value={time.value}>
-                              {time.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-              
-              <Button type="submit" className="w-full bg-primary text-white h-12 text-base">
-                <Search className="mr-2 h-5 w-5" />
-                Find Parking
-              </Button>
-            </form>
-          </Form>
-        </CardContent>
-      </Card>
-
-      {/* Map Modal */}
-      <MapSearchModal 
-        isOpen={isMapModalOpen} 
-        onClose={() => setIsMapModalOpen(false)} 
-        searchParams={searchParams} 
-      />
-    </>
+            </div>
+            
+            <Button type="submit" className="w-full bg-primary text-white h-12 text-base">
+              <Search className="mr-2 h-5 w-5" />
+              Find Parking
+            </Button>
+          </form>
+        </Form>
+      </CardContent>
+    </Card>
   );
 }
 
