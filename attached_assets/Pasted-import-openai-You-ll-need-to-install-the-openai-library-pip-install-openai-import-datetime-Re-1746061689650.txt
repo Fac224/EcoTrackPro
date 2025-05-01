@@ -1,0 +1,226 @@
+import openai  # You'll need to install the openai library: pip install openai
+import datetime
+
+# Replace with your actual OpenAI API key
+openai.api_key = "YOUR_OPENAI_API_KEY"
+
+#  Placeholder for your database interaction.  In a real app, this would
+#  involve a database query (e.g., using SQLAlchemy, a database connector, etc.)
+def get_available_parking_spaces(user_location, start_time, end_time):
+    """
+    Retrieves available parking spaces from the database based on location and time.
+    Args:
+        user_location (str): The user's location.
+        start_time (datetime.datetime): The desired start time.
+        end_time (datetime.datetime): The desired end time.
+
+    Returns:
+        list: A list of dictionaries, where each dictionary represents a parking space.
+              Example:
+              [
+                  {"address": "123 Main St", "price": 10, "available_from": "2024-07-28 17:00", "available_to": "2024-07-28 21:00"},
+                  {"address": "456 Oak Ave", "price": 15, "available_from": "2024-07-28 18:00", "available_to": "2024-07-28 22:00"},
+              ]
+    """
+    #  Replace this placeholder with your actual database query logic.
+    #  This is just dummy data for demonstration.
+    dummy_data = [
+        {"address": "123 Main St", "price": 10, "available_from": datetime.datetime(2024, 7, 29, 17, 0), "available_to": datetime.datetime(2024, 7, 29, 21, 0)},
+        {"address": "456 Oak Ave", "price": 15, "available_from": datetime.datetime(2024, 7, 29, 18, 0), "available_to": datetime.datetime(2024, 7, 29, 22, 0)},
+        {"address": "789 Pine Ln", "price": 12, "available_from": datetime.datetime(2024, 7, 29, 16, 0), "available_to": datetime.datetime(2024, 7, 29, 19, 0)},
+        {"address": "321 Elm St", "price": 8, "available_from": datetime.datetime(2024, 7, 30, 10, 0), "available_to": datetime.datetime(2024, 7, 30, 14, 0)},
+    ]
+
+    # Filter dummy data based on the provided time and location.
+    # In a real application, you'd do this filtering in your database query.
+    filtered_data = [
+        space for space in dummy_data
+        if space["available_from"] <= start_time and space["available_to"] >= end_time
+    ]
+    return filtered_data
+
+
+
+def extract_location(user_query):
+    """
+    Extracts the location from the user query.  This is a placeholder.
+    Args:
+        user_query (str): The user's query.
+    Returns:
+        str: The extracted location, or None if no location is found.
+    """
+    #  Replace this with a more robust location extraction method.
+    #  For example, you could use a Named Entity Recognition (NER) library
+    #  like spaCy, or a regular expression.  This is a very basic example.
+    location_keywords = ["near", "around", "at", "in"]
+    for keyword in location_keywords:
+        if keyword in user_query:
+            parts = user_query.split(keyword)
+            if len(parts) > 1:
+                return parts[1].split()[0]  #  Get the word after the keyword
+    if "address" in user_query:
+      parts = user_query.split("address")
+      if len(parts) > 1:
+        return parts[1].strip().split()[0]
+    return "stadium" # Default location
+
+
+def extract_time(user_query):
+    """
+    Extracts the time from the user query and converts it to datetime.
+    This is a placeholder and needs improvement.
+    Args:
+        user_query (str): The user's query.
+    Returns:
+        tuple: (start_time, end_time) as datetime objects, or (None, None) on error
+    """
+    # Replace this with a proper time parsing library like dateparser.
+    #  This is a very basic example and will only work for very simple queries.
+    import re
+
+    time_keywords = ["at", "between", "from", "to"]
+    found_time_str = None
+    for keyword in time_keywords:
+        if keyword in user_query:
+            parts = user_query.split(keyword)
+            if len(parts) > 1:
+                found_time_str = parts[1]
+                break
+
+    if not found_time_str:
+      return None, None
+
+    times = re.findall(r"(\d{1,2}:\d{2}(?:[ap]m)?)", found_time_str)  # Find times
+
+    if not times:
+        return None, None
+
+    try:
+        if len(times) == 1:
+            time_obj = datetime.datetime.strptime(times[0], "%I:%M%p") if ":" in times[0] else datetime.datetime.strptime(times[0], "%I%p")
+            # Assume today's date, for simplicity
+            today = datetime.date.today()
+            start_time = datetime.datetime(today.year, today.month, today.day, time_obj.hour, time_obj.minute)
+            end_time = start_time + datetime.timedelta(hours=2)  #  default
+            return start_time, end_time
+        elif len(times) == 2:
+          start_time = datetime.datetime.strptime(times[0], "%I:%M%p") if ":" in times[0] else datetime.datetime.strptime(times[0], "%I%p")
+          end_time = datetime.datetime.strptime(times[1], "%I:%M%p") if ":" in times[1] else datetime.datetime.strptime(times[1], "%I%p")
+          today = datetime.date.today()
+          start_time = datetime.datetime(today.year, today.month, today.day, start_time.hour, start_time.minute)
+          end_time = datetime.datetime(today.year, today.month, today.day, end_time.hour, end_time.minute)
+          return start_time, end_time
+        else:
+          return None, None
+
+
+    except ValueError:
+        return None, None
+
+
+
+def extract_date(user_query):
+    """
+    Extracts the date from the user query.  This is a placeholder.
+    Args:
+        user_query (str): The user's query
+    Returns:
+        datetime.date: The extracted date, or None if no date is found.
+    """
+    # Replace with a proper date parsing library.
+    #  This is a very basic example.
+    import re
+    date_keywords = ["tomorrow", "today"]
+    for keyword in date_keywords:
+        if keyword in user_query:
+            if keyword == "tomorrow":
+                return datetime.date.today() + datetime.timedelta(days=1)
+            elif keyword == "today":
+                return datetime.date.today()
+    date_pattern = r"(\d{1,2}/\d{1,2}/\d{4})"  #  DD/MM/YYYY
+    match = re.search(date_pattern, user_query)
+    if match:
+        try:
+            return datetime.datetime.strptime(match.group(1), "%m/%d/%Y").date()
+        except ValueError:
+            return None
+    return datetime.date.today() # Default
+
+
+def format_parking_response(available_spaces):
+    """
+    Formats the AI's response based on the available parking spaces.
+
+    Args:
+        available_spaces (list): A list of dictionaries representing available parking spaces.
+
+    Returns:
+        str: The formatted response.
+    """
+    if not available_spaces:
+        return "No, there is no parking available at that time and location."
+    elif len(available_spaces) == 1:
+        space = available_spaces[0]
+        return f"Yes, there is parking available at {space['address']} for ${space['price']}."
+    else:
+        response = "Yes, there are several parking spaces available:\n"
+        for space in available_spaces:
+            response += f"- {space['address']} for ${space['price']}\n"
+        return response
+
+
+
+def handle_parking_query(user_query):
+    """
+    Handles a user query about parking availability.
+
+    Args:
+        user_query (str): The user's query (e.g., "Is there parking near the stadium tomorrow at 7pm?").
+
+    Returns:
+        str: The response to the user.
+    """
+
+    # 1. Extract information from the user query
+    location = extract_location(user_query)
+    date = extract_date(user_query)
+    start_time, end_time = extract_time(user_query)
+
+    if start_time and date:
+      start_time = datetime.datetime(date.year, date.month, date.day, start_time.hour, start_time.minute)
+      end_time = datetime.datetime(date.year, date.month, date.day, end_time.hour, end_time.minute)
+    elif date:
+      start_time = datetime.datetime(date.year, date.month, date.day, 0, 0)
+      end_time = datetime.datetime(date.year, date.month, date.day, 23, 59)
+    else:
+      today = datetime.date.today()
+      start_time = datetime.datetime(today.year, today.month, today.day, 0, 0)
+      end_time = datetime.datetime(today.year, today.month, today.day, 23, 59)
+
+
+    # 2. Get available parking spaces from the database
+    available_spaces = get_available_parking_spaces(location, start_time, end_time)
+
+    # 3. Format the response
+    response = format_parking_response(available_spaces)
+    return response
+
+
+
+def main():
+    """
+    Main function to run the parking assistant.
+    """
+    print("Welcome to the AI Parking Assistant!")
+    while True:
+        user_query = input("Please enter your parking query (or type 'exit' to quit): ")
+        if user_query.lower() == "exit":
+            break
+
+        response = handle_parking_query(user_query)
+        print(response)
+
+
+
+if __name__ == "__main__":
+    main()

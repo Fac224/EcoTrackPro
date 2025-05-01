@@ -1,5 +1,6 @@
 import OpenAI from "openai";
 import { z } from "zod";
+import { handleParkingQuery } from "./parkingPredictor";
 
 // The newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
@@ -10,7 +11,8 @@ export enum AIFeatureType {
   EVENT_PARKING = "event_parking",
   AIRPORT_TRAVEL = "airport_travel",
   COMMUTER_PARKING = "commuter_parking",
-  PERSONALIZED_RECOMMENDATIONS = "personalized_recommendations"
+  PERSONALIZED_RECOMMENDATIONS = "personalized_recommendations",
+  PARKING_AVAILABILITY = "parking_availability"
 }
 
 // Response schemas for different AI feature types
@@ -107,6 +109,15 @@ function getSystemPrompt(featureType: AIFeatureType): string {
 export function determineFeatureType(query: string): AIFeatureType {
   const lowercaseQuery = query.toLowerCase();
   
+  // Check for parking availability questions first
+  if ((lowercaseQuery.includes("park") || lowercaseQuery.includes("spot") || lowercaseQuery.includes("space")) && 
+      (lowercaseQuery.includes("available") || lowercaseQuery.includes("find") || 
+       lowercaseQuery.includes("is there") || lowercaseQuery.includes("can i") ||
+       lowercaseQuery.includes("at") || lowercaseQuery.includes("near") ||
+       lowercaseQuery.includes("tomorrow") || lowercaseQuery.includes("today"))) {
+    return AIFeatureType.PARKING_AVAILABILITY;
+  }
+  
   if (lowercaseQuery.includes("event") || 
       lowercaseQuery.includes("concert") || 
       lowercaseQuery.includes("game") || 
@@ -160,6 +171,29 @@ export async function processUserQuery(
 > {
   // Determine feature type from query
   const featureType = determineFeatureType(query);
+  
+  // Handle parking availability queries with our specialized predictor
+  if (featureType === AIFeatureType.PARKING_AVAILABILITY) {
+    try {
+      // Use the specialized parking predictor for availability queries
+      const availabilityResponse = await handleParkingQuery(query);
+      
+      // Return as general assistance response
+      return {
+        response: availabilityResponse,
+        suggestions: [
+          "Would you like to book one of these spaces?",
+          "Do you need directions to any of these locations?",
+          "Would you like to see more parking options in this area?"
+        ]
+      };
+    } catch (error) {
+      console.error("Error processing parking availability query:", error);
+      return {
+        response: "I'm sorry, I couldn't check parking availability at the moment. Please try again with specific location and time details."
+      };
+    }
+  }
   
   // Build system prompt based on feature type
   const systemPrompt = getSystemPrompt(featureType);
