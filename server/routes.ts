@@ -16,6 +16,7 @@ import {
   generatePersonalizedSuggestions,
   AIFeatureType
 } from "./ai";
+import { handleParkingQuery } from "./parkingPredictor";
 import session from "express-session";
 import MemoryStore from "memorystore";
 
@@ -549,6 +550,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return handleZodError(error, res);
       }
       return res.status(500).json({ message: "Failed to generate recommendations" });
+    }
+  });
+  
+  // Parking availability predictor endpoint
+  app.post("/api/ai/parking-availability", async (req, res) => {
+    try {
+      const { query } = z.object({ query: z.string() }).parse(req.body);
+      
+      const response = await handleParkingQuery(query);
+      res.json({ 
+        response,
+        suggestions: [
+          "Would you like to book one of these spaces?",
+          "Do you need directions to any of these locations?",
+          "Would you like to see more parking options in this area?"
+        ]
+      });
+    } catch (error) {
+      if (error instanceof ZodError) {
+        return handleZodError(error, res);
+      }
+      console.error("Error processing parking availability query:", error);
+      res.status(500).json({ 
+        message: "Failed to process parking availability query",
+        error: error.message
+      });
     }
   });
 
