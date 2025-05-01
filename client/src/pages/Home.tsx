@@ -7,8 +7,6 @@ import FAQAccordion from "@/components/FAQAccordion";
 import DrivewayCard from "@/components/DrivewayCard";
 import AIAssistant from "@/components/AIAssistant";
 import PersonalizedRecommendations from "@/components/PersonalizedRecommendations";
-import EventParkingRecommendations from "@/components/EventParkingRecommendations";
-import AirportParkingFinder from "@/components/AirportParkingFinder";
 import { useQuery } from "@tanstack/react-query";
 import { Driveway } from "@shared/schema";
 import { 
@@ -398,14 +396,8 @@ export default function Home() {
             </p>
           </div>
           
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <div>
-              <EventParkingRecommendations />
-            </div>
-            <div className="space-y-8">
-              <PersonalizedRecommendations />
-              <AirportParkingFinder />
-            </div>
+          <div className="mx-auto max-w-3xl">
+            <PersonalizedRecommendations />
           </div>
         </div>
       </div>
