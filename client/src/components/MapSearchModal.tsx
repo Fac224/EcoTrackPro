@@ -14,7 +14,7 @@ interface MapSearchModalProps {
   isOpen: boolean;
   onClose: () => void;
   searchParams: {
-    location: string;
+    location?: string;
     date?: string;
     startTime?: string;
     endTime?: string;

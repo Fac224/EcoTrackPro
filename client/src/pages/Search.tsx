@@ -182,7 +182,7 @@ export default function Search() {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="">Any time</SelectItem>
+                          <SelectItem value="any">Any time</SelectItem>
                           {timeSlots.map((time) => (
                             <SelectItem key={time} value={time}>
                               {formatTimeString(time)}
@@ -207,7 +207,7 @@ export default function Search() {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="">Any time</SelectItem>
+                          <SelectItem value="any">Any time</SelectItem>
                           {timeSlots.map((time) => (
                             <SelectItem key={time} value={time}>
                               {formatTimeString(time)}
