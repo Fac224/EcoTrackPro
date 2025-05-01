@@ -1,0 +1,158 @@
+import datetime
+import uuid  #  For generating unique booking IDs
+
+def handle_query(user_query, mock_data, user_id=None):  # Add user_id for bookings
+    """
+    Handles user queries and generates responses using mock data.
+
+    Args:
+        user_query (str): The user's query.
+        mock_data (dict): The dictionary containing mock data.
+        user_id (str, optional): The ID of the user making the request.  Required for booking.
+
+    Returns:
+        str: The AI's response.
+    """
+    user_query = user_query.lower()  # Simplify matching
+
+    if "parking near" in user_query:
+        location = extract_location(user_query)  #  You'll need to define this
+        if not location:
+            return "Sorry, I couldn't find a location in your query."
+        available_spaces = [
+            space
+            for space in mock_data["parking_spaces"]
+            if location in space["address"].lower()  #  Very basic matching
+            and datetime.datetime.strptime(space["available_from"], "%Y-%m-%d %H:%M") <= datetime.datetime.now()
+            and datetime.datetime.strptime(space["available_to"], "%Y-%m-%d %H:%M") >= datetime.datetime.now()
+        ]
+        if available_spaces:
+            response = "Here's what I found:\n"
+            for space in available_spaces:
+                response += (
+                    f"- {space['address']}: ${space['price']} "
+                    f"({space['description']})\n"
+                )
+            return response
+        else:
+            return f"Sorry, there's no parking available near {location} right now."
+
+    elif "book" in user_query:
+        address = extract_address_from_booking_query(user_query) # You define this
+        if not address:
+            return "Sorry, I couldn't find an address in your booking request."
+
+        space_to_book = None
+        for space in mock_data["parking_spaces"]:
+            if address in space["address"]: #  basic matching
+                space_to_book = space
+                break
+
+        if not space_to_book:
+            return f"Sorry, I couldn't find a parking space at {address}."
+
+        if user_id is None:
+            return "To make a booking, please log in."  #  Crucial for real apps
+
+        booking_id = str(uuid.uuid4())  # Generate a unique ID
+        start_time = datetime.datetime.now() #  Made up
+        end_time = start_time + datetime.timedelta(hours=2)  # Made up
+        price = space_to_book['price'] # Made up
+
+        mock_data["bookings"][booking_id] = {
+            "user_id": user_id,
+            "space_id": space_to_book["address"], # store address as space id
+            "start_time": start_time.strftime("%Y-%m-%d %H:%M"),
+            "end_time": end_time.strftime("%Y-%m-%d %H:%M"),
+            "price": price,
+        }
+        return (
+            f"OK, I've booked the space at {space_to_book['address']} for you. "
+            f"Your booking ID is {booking_id}.  The price is ${price}."
+        )
+
+    elif "how do i get to" in user_query:
+        location = extract_location(user_query)
+        if not location:
+            return "Sorry, I don't have directions without a location."
+        #  In a real app, you'd use a mapping API (e.g., Google Maps) here.
+        return f"To get to {location}, head north on Main St, then turn left on Oak Ave."  # Mock directions
+
+    elif "what is my booking id" in user_query:
+        if user_id is None:
+            return "Please log in to view your bookings."
+        if not mock_data["bookings"]:
+            return "You don't have any bookings yet."
+        #  Find the booking for the user.
+        users_bookings = [k for k, v in mock_data["bookings"].items() if v["user_id"] == user_id] # list of booking ids
+        if users_bookings:
+          return f"Your booking IDs are: {', '.join(users_bookings)}"
+        else:
+          return "No bookings found for this user."
+
+    elif "cancel my booking" in user_query:
+        booking_id = extract_booking_id(user_query) # You define this
+        if not booking_id:
+            return "Please provide the booking ID you want to cancel."
+        if booking_id not in mock_data["bookings"]:
+            return "Invalid booking ID."
+        del mock_data["bookings"][booking_id]
+        return "Your booking has been cancelled."
+
+    elif "contact customer support" in user_query:
+        return f"You can reach customer support at {mock_data['support_contact']}."
+
+    else:
+        return (
+            "I can help you find and book parking.  Try asking me "
+            " 'Is there parking near downtown?' or 'Book the space at 123 Main St'."
+        )
+
+def extract_location(query):
+    #  Basic keyword extraction (replace with better logic)
+    location_words = ["near", "around", "at", "in"]
+    for word in location_words:
+        if word in query:
+            parts = query.split(word)
+            if len(parts) > 1:
+                return parts[1].strip()
+    return None
+
+def extract_address_from_booking_query(query):
+  # very basic
+  address_words = ["at", "space at"]
+  for word in address_words:
+    if word in query:
+      parts = query.split(word)
+      if len(parts) > 1:
+        return parts[1].split("for")[0].strip()
+  return None
+
+def extract_booking_id(query):
+  booking_id_words = ["booking id", "booking number", "cancel booking"]
+  for word in booking_id_words:
+    if word in query:
+      parts = query.split(word)
+      if len(parts) > 1:
+        return parts[1].strip().split()[0]
+  return None
+
+def main():
+    """
+    Main function to run the AI assistant.
+    """
+    global mock_data  #  Use the global mock data
+    print("Welcome to the EasyPark AI Assistant!")
+    #  Simulate a logged-in user for this example.  In a real app, you'd
+    #  get this from your authentication system.
+    user_id = "user123"  #  Made-up user ID
+    while True:
+        user_query = input("Enter your query (or 'exit' to quit): ")
+        if user_query.lower() == "exit":
+            break
+        response = handle_query(user_query, mock_data, user_id)
+        print(response)
+
+
+if __name__ == "__main__":
+    main()

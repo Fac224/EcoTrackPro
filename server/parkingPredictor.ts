@@ -42,7 +42,13 @@ const MOCK_PARKING_DATA = {
       longitude: -118.2500,
     }
   ],
-  bookings: {}, // Store bookings with IDs
+  bookings: {} as Record<string, {
+    userId: number | string;
+    spaceId: string;
+    startTime: string;
+    endTime: string;
+    price: number;
+  }>,
   supportContact: "support@easypark.com",
 };
 
@@ -412,39 +418,282 @@ export function formatParkingResponse(availableSpaces: ParkingSpace[]): string {
 }
 
 /**
- * Handle a user's parking availability query
- * @param userQuery Natural language query about parking
- * @returns Response string
+ * Extract an address from a booking query
+ * @param userQuery The user's query
+ * @returns The extracted address or null if none found
  */
-export async function handleParkingQuery(userQuery: string): Promise<string> {
-  // Extract information from the query
-  const location = extractLocation(userQuery);
-  const date = extractDate(userQuery);
-  const [startTime, endTime] = extractTime(userQuery);
+export function extractAddressFromBookingQuery(userQuery: string): string | null {
+  const lowercaseQuery = userQuery.toLowerCase();
+  const addressKeywords = ["at", "space at", "parking at"];
   
-  // Set up default times if none specified
-  let queryStartTime: Date;
-  let queryEndTime: Date;
-  
-  if (startTime && endTime) {
-    // Use extracted times but keep the date from the date extraction
-    queryStartTime = new Date(date);
-    queryStartTime.setHours(startTime.getHours(), startTime.getMinutes(), 0, 0);
-    
-    queryEndTime = new Date(date);
-    queryEndTime.setHours(endTime.getHours(), endTime.getMinutes(), 0, 0);
-  } else {
-    // Default to whole day if no specific times
-    queryStartTime = new Date(date);
-    queryStartTime.setHours(0, 0, 0, 0);
-    
-    queryEndTime = new Date(date);
-    queryEndTime.setHours(23, 59, 59, 999);
+  for (const keyword of addressKeywords) {
+    if (lowercaseQuery.includes(keyword)) {
+      const parts = lowercaseQuery.split(keyword);
+      if (parts.length > 1) {
+        // Try to get the address part before "for" if it exists
+        const addressPart = parts[1].split("for")[0].trim();
+        if (addressPart) {
+          return addressPart;
+        }
+      }
+    }
   }
   
-  // Get available parking spaces
-  const availableSpaces = await getAvailableParkingSpaces(location, queryStartTime, queryEndTime);
+  return null;
+}
+
+/**
+ * Extract a booking ID from a query
+ * @param userQuery The user's query
+ * @returns The extracted booking ID or null if none found
+ */
+export function extractBookingId(userQuery: string): string | null {
+  const lowercaseQuery = userQuery.toLowerCase();
+  const bookingIdKeywords = ["booking id", "booking number", "cancel booking"];
   
-  // Format and return the response
-  return formatParkingResponse(availableSpaces);
+  for (const keyword of bookingIdKeywords) {
+    if (lowercaseQuery.includes(keyword)) {
+      const parts = lowercaseQuery.split(keyword);
+      if (parts.length > 1) {
+        // Try to get the first word after the keyword
+        const words = parts[1].trim().split(/\s+/);
+        if (words.length > 0 && words[0]) {
+          return words[0];
+        }
+      }
+    }
+  }
+  
+  return null;
+}
+
+/**
+ * Generate a unique booking ID
+ * @returns A UUID string
+ */
+function generateBookingId(): string {
+  // Simple UUID generation - in production you might want to use a library like uuid
+  return 'book_' + Date.now().toString(36) + Math.random().toString(36).substring(2, 9);
+}
+
+/**
+ * Book a parking space
+ * @param address The address of the parking space
+ * @param userId The ID of the user making the booking
+ * @returns An object with the booking details or null if booking failed
+ */
+export function bookParkingSpace(address: string, userId: number | string): { 
+  bookingId: string; 
+  address: string; 
+  price: number; 
+  startTime: string; 
+  endTime: string; 
+} | null {
+  // Find the parking space in our mock data
+  const spaceToBook = MOCK_PARKING_DATA.parkingSpaces.find(space => 
+    space.address.toLowerCase().includes(address.toLowerCase())
+  );
+  
+  if (!spaceToBook) {
+    return null;
+  }
+  
+  // Generate a booking ID
+  const bookingId = generateBookingId();
+  
+  // Use the current time plus 1 hour for start time and add 2 hours for end time
+  const startTime = new Date();
+  startTime.setHours(startTime.getHours() + 1); // Start in 1 hour
+  
+  const endTime = new Date(startTime);
+  endTime.setHours(endTime.getHours() + 2); // End 2 hours after start
+  
+  // Format times for storage
+  const startTimeStr = startTime.toISOString();
+  const endTimeStr = endTime.toISOString();
+  
+  // Store the booking
+  MOCK_PARKING_DATA.bookings[bookingId] = {
+    userId: userId,
+    spaceId: spaceToBook.address,
+    startTime: startTimeStr,
+    endTime: endTimeStr,
+    price: spaceToBook.price
+  };
+  
+  return {
+    bookingId,
+    address: spaceToBook.address,
+    price: spaceToBook.price,
+    startTime: startTimeStr,
+    endTime: endTimeStr
+  };
+}
+
+/**
+ * Cancel a booking
+ * @param bookingId The ID of the booking to cancel
+ * @returns True if successful, false otherwise
+ */
+export function cancelBooking(bookingId: string): boolean {
+  if (bookingId in MOCK_PARKING_DATA.bookings) {
+    delete MOCK_PARKING_DATA.bookings[bookingId];
+    return true;
+  }
+  return false;
+}
+
+/**
+ * Get a user's bookings
+ * @param userId The ID of the user
+ * @returns An array of booking details
+ */
+export function getUserBookings(userId: number | string): Array<{
+  bookingId: string;
+  address: string;
+  startTime: string;
+  endTime: string;
+  price: number;
+}> {
+  const userBookings: Array<{
+    bookingId: string;
+    address: string;
+    startTime: string;
+    endTime: string;
+    price: number;
+  }> = [];
+  
+  for (const [bookingId, booking] of Object.entries(MOCK_PARKING_DATA.bookings)) {
+    if (booking.userId === userId) {
+      userBookings.push({
+        bookingId,
+        address: booking.spaceId,
+        startTime: booking.startTime,
+        endTime: booking.endTime,
+        price: booking.price
+      });
+    }
+  }
+  
+  return userBookings;
+}
+
+/**
+ * Handle a user's parking availability query
+ * @param userQuery Natural language query about parking
+ * @param userId Optional user ID for booking functionality
+ * @returns Response string
+ */
+export async function handleParkingQuery(userQuery: string, userId?: number | string): Promise<string> {
+  const lowercaseQuery = userQuery.toLowerCase();
+  
+  // Check if this is a booking request
+  if (lowercaseQuery.includes("book") || lowercaseQuery.includes("reserve")) {
+    // Extract address from booking query
+    const address = extractAddressFromBookingQuery(userQuery);
+    if (!address) {
+      return "I couldn't find an address in your booking request. Please specify where you want to park, like 'Book a space at 123 Main St'.";
+    }
+    
+    // Check if user is logged in
+    if (!userId) {
+      return "To make a booking, please log in first or create an account.";
+    }
+    
+    // Book the parking space
+    const bookingResult = bookParkingSpace(address, userId);
+    if (!bookingResult) {
+      return `Sorry, I couldn't find a parking space at ${address}.`;
+    }
+    
+    // Format the booking confirmation
+    const startTime = new Date(bookingResult.startTime);
+    const endTime = new Date(bookingResult.endTime);
+    const formattedStart = startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const formattedEnd = endTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const formattedDate = startTime.toLocaleDateString();
+    
+    return `Great! I've booked a parking space at ${bookingResult.address} for you on ${formattedDate} from ${formattedStart} to ${formattedEnd}. Your booking ID is ${bookingResult.bookingId} and the total cost is $${(bookingResult.price * 2).toFixed(2)}.`;
+  }
+  
+  // Check if this is a cancellation request
+  if (lowercaseQuery.includes("cancel")) {
+    const bookingId = extractBookingId(userQuery);
+    if (!bookingId) {
+      return "To cancel a booking, please provide your booking ID. For example, 'Cancel my booking ABC123'.";
+    }
+    
+    const cancelResult = cancelBooking(bookingId);
+    if (cancelResult) {
+      return `Your booking ${bookingId} has been successfully cancelled.`;
+    } else {
+      return `I couldn't find booking ${bookingId}. Please check your booking ID and try again.`;
+    }
+  }
+  
+  // Check if user is asking about their bookings
+  if (lowercaseQuery.includes("my booking") || lowercaseQuery.includes("my reservation") ||
+      lowercaseQuery.includes("booking id") || lowercaseQuery.includes("show my booking")) {
+    if (!userId) {
+      return "To view your bookings, please log in first.";
+    }
+    
+    const userBookings = getUserBookings(userId);
+    if (userBookings.length === 0) {
+      return "You don't have any active bookings.";
+    }
+    
+    let response = "Here are your current bookings:\n";
+    userBookings.forEach((booking, index) => {
+      const startTime = new Date(booking.startTime);
+      const endTime = new Date(booking.endTime);
+      response += `${index + 1}. Booking ID: ${booking.bookingId}\n   Location: ${booking.address}\n   Time: ${startTime.toLocaleString()} to ${endTime.toLocaleString()}\n   Price: $${booking.price.toFixed(2)}\n\n`;
+    });
+    
+    return response;
+  }
+  
+  // Handle parking availability search queries
+  if (lowercaseQuery.includes("parking") || lowercaseQuery.includes("available") || 
+      lowercaseQuery.includes("find") || lowercaseQuery.includes("where can i park")) {
+    // Extract information from the query
+    const location = extractLocation(userQuery);
+    const date = extractDate(userQuery);
+    const [startTime, endTime] = extractTime(userQuery);
+    
+    // Set up default times if none specified
+    let queryStartTime: Date;
+    let queryEndTime: Date;
+    
+    if (startTime && endTime) {
+      // Use extracted times but keep the date from the date extraction
+      queryStartTime = new Date(date);
+      queryStartTime.setHours(startTime.getHours(), startTime.getMinutes(), 0, 0);
+      
+      queryEndTime = new Date(date);
+      queryEndTime.setHours(endTime.getHours(), endTime.getMinutes(), 0, 0);
+    } else {
+      // Default to whole day if no specific times
+      queryStartTime = new Date(date);
+      queryStartTime.setHours(0, 0, 0, 0);
+      
+      queryEndTime = new Date(date);
+      queryEndTime.setHours(23, 59, 59, 999);
+    }
+    
+    // Get available parking spaces
+    const availableSpaces = await getAvailableParkingSpaces(location, queryStartTime, queryEndTime);
+    
+    // Format and return the response
+    return formatParkingResponse(availableSpaces);
+  }
+  
+  // Handle customer support queries
+  if (lowercaseQuery.includes("support") || lowercaseQuery.includes("help") || 
+      lowercaseQuery.includes("contact")) {
+    return `For customer support, please contact us at ${MOCK_PARKING_DATA.supportContact} or use the "Contact Us" form on our website.`;
+  }
+  
+  // Default response for unrecognized queries
+  return "I can help you find available parking, make bookings, check your existing bookings, or cancel reservations. Try asking 'Is there parking near downtown?', 'Book a space at 123 Main St', or 'Show my bookings'.";
 }

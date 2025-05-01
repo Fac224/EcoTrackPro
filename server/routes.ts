@@ -459,10 +459,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Get user context if authenticated
       let userContext;
+      let userId = undefined;
       if (req.session && req.session.userId) {
+        userId = req.session.userId as number;
         try {
-          const user = await storage.getUser(req.session.userId as number);
-          const userBookings = await storage.getUserBookings(req.session.userId as number);
+          const user = await storage.getUser(userId);
+          const userBookings = await storage.getUserBookings(userId);
           
           if (user) {
             userContext = {
@@ -476,6 +478,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
       
+      // Check if the query is parking-related (availability, booking, etc.)
+      const isParkingQuery = 
+        query.toLowerCase().includes("parking") || 
+        query.toLowerCase().includes("book") || 
+        query.toLowerCase().includes("reservation") || 
+        query.toLowerCase().includes("cancel") ||
+        query.toLowerCase().includes("space at") ||
+        query.toLowerCase().includes("where can i park");
+      
+      if (isParkingQuery) {
+        try {
+          // Use the enhanced parking query handler with the user's ID
+          const parkingResponse = await handleParkingQuery(query, userId);
+          return res.json({ response: parkingResponse });
+        } catch (parkingError) {
+          console.error("Error processing parking query:", parkingError);
+          // If the parking handler fails, fall back to the general AI
+        }
+      }
+      
+      // If not a parking query or if parking handler failed, use the normal AI processing
       const response = await processUserQuery(query, userContext);
       res.json(response);
     } catch (error) {
@@ -558,7 +581,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { query } = z.object({ query: z.string() }).parse(req.body);
       
-      const response = await handleParkingQuery(query);
+      // Get user ID if authenticated
+      let userId = undefined;
+      if (req.session && req.session.userId) {
+        userId = req.session.userId as number;
+      }
+      
+      const response = await handleParkingQuery(query, userId);
       res.json({ 
         response,
         suggestions: [
@@ -574,7 +603,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error("Error processing parking availability query:", error);
       res.status(500).json({ 
         message: "Failed to process parking availability query",
-        error: error.message
+        error: error.message 
       });
     }
   });
