@@ -1,6 +1,51 @@
 import { storage } from './storage';
 import { Driveway } from '@shared/schema';
 
+// Enhanced mock data for providing more detailed parking information
+// This can be used alongside actual database data
+const MOCK_PARKING_DATA = {
+  parkingSpaces: [
+    {
+      address: "123 Main St, Anytown, USA",
+      price: 10.00,
+      availableFrom: "2024-07-29 08:00",
+      availableTo: "2024-07-29 22:00",
+      description: "Private driveway near downtown.",
+      latitude: 34.0522,
+      longitude: -118.2437,
+    },
+    {
+      address: "456 Oak Ave, Anytown, USA",
+      price: 15.00,
+      availableFrom: "2024-07-29 10:00",
+      availableTo: "2024-07-29 18:00",
+      description: "Spacious spot, close to the stadium.",
+      latitude: 34.0589,
+      longitude: -118.2515,
+    },
+    {
+      address: "789 Pine Ln, Anytown, USA",
+      price: 12.50,
+      availableFrom: "2024-07-29 09:00",
+      availableTo: "2024-07-29 20:00",
+      description: "Covered parking in quiet neighborhood.",
+      latitude: 34.0631,
+      longitude: -118.2375,
+    },
+    {
+      address: "321 Elm St, Anytown, USA",
+      price: 8.00,
+      availableFrom: "2024-07-30 07:00",
+      availableTo: "2024-07-30 19:00",
+      description: "Economy parking with easy access.",
+      latitude: 34.0550,
+      longitude: -118.2500,
+    }
+  ],
+  bookings: {}, // Store bookings with IDs
+  supportContact: "support@easypark.com",
+};
+
 interface ParkingSpace {
   address: string;
   price: number;
@@ -275,6 +320,42 @@ export async function getAvailableParkingSpaces(
     }
   }
   
+  // Also check the mock data for additional parking options
+  const lowercaseLocation = location.toLowerCase();
+  for (const mockSpace of MOCK_PARKING_DATA.parkingSpaces) {
+    const mockAddress = mockSpace.address.toLowerCase();
+    
+    // Check if location is mentioned in the address
+    if (mockAddress.includes(lowercaseLocation) || 
+        (lowercaseLocation === "downtown" && mockAddress.includes("main"))) {
+      
+      // Parse mock data time strings
+      const mockFrom = new Date(mockSpace.availableFrom);
+      const mockTo = new Date(mockSpace.availableTo);
+      
+      // Check date - compare year, month, and day
+      const isSameDay = 
+        mockFrom.getFullYear() === startTime.getFullYear() &&
+        mockFrom.getMonth() === startTime.getMonth() &&
+        mockFrom.getDate() === startTime.getDate();
+      
+      // Only include if dates match and time range works
+      if (isSameDay && 
+          mockFrom.getTime() <= startTime.getTime() && 
+          mockTo.getTime() >= endTime.getTime()) {
+        
+        availableSpaces.push({
+          address: mockSpace.address,
+          price: mockSpace.price,
+          availableFrom: mockFrom,
+          availableTo: mockTo,
+          ownerId: 999, // Special ID for mock data
+          drivewayId: 999 // Special ID for mock data
+        });
+      }
+    }
+  }
+  
   return availableSpaces;
 }
 
@@ -288,12 +369,44 @@ export function formatParkingResponse(availableSpaces: ParkingSpace[]): string {
     return "No, there is no parking available at that time and location.";
   } else if (availableSpaces.length === 1) {
     const space = availableSpaces[0];
-    return `Yes, there is parking available at ${space.address} for $${space.price.toFixed(2)} per hour.`;
+    // Find description for mock parking spaces
+    let description = "";
+    if (space.ownerId === 999) {
+      // This is from mock data, find the description
+      const mockSpace = MOCK_PARKING_DATA.parkingSpaces.find(ms => 
+        ms.address === space.address && 
+        ms.price === space.price
+      );
+      if (mockSpace && mockSpace.description) {
+        description = ` (${mockSpace.description})`;
+      }
+    }
+    
+    const formattedPrice = space.price.toFixed(2);
+    const hours = Math.round((space.availableTo.getTime() - space.availableFrom.getTime()) / (1000 * 60 * 60));
+    const availability = `Available for ${hours} hours`;
+    
+    return `Yes, there is parking available at ${space.address} for $${formattedPrice} per hour${description}. ${availability}.`;
   } else {
     let response = "Yes, there are several parking spaces available:\n";
     availableSpaces.forEach((space, index) => {
-      response += `${index + 1}. ${space.address} for $${space.price.toFixed(2)} per hour\n`;
+      // Check if this is from mock data and get description
+      let details = "";
+      if (space.ownerId === 999) {
+        const mockSpace = MOCK_PARKING_DATA.parkingSpaces.find(ms => 
+          ms.address === space.address && 
+          ms.price === space.price
+        );
+        if (mockSpace && mockSpace.description) {
+          details = ` - ${mockSpace.description}`;
+        }
+      }
+      
+      const formattedPrice = space.price.toFixed(2);
+      response += `${index + 1}. ${space.address} for $${formattedPrice} per hour${details}\n`;
     });
+    
+    response += "\nFor more details or to book a space, please use the search functionality on our website.";
     return response;
   }
 }
