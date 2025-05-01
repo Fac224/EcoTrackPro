@@ -4,9 +4,8 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { MessageCircle, Calendar, Plane, Car, MapPin, X, Send, Sparkles, ExternalLink } from "lucide-react";
+import { MessageCircle, Calendar, Plane, Car, MapPin, X, Send, Sparkles } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
-import { Link } from "wouter";
 
 // Define message types and interfaces
 interface Message {
@@ -17,24 +16,11 @@ interface Message {
   timestamp: Date;
   suggestions?: string[];
   recommendations?: any[];
-  links?: { text: string; url: string }[];
 }
 
 type AIAssistantProps = {
   initialOpen?: boolean;
 };
-
-// Cities with parking locations
-const SUPPORTED_CITIES = [
-  { name: "san francisco", displayName: "San Francisco" },
-  { name: "new york", displayName: "New York" },
-  { name: "chicago", displayName: "Chicago" },
-  { name: "los angeles", displayName: "Los Angeles" },
-  { name: "boston", displayName: "Boston" },
-  { name: "seattle", displayName: "Seattle" },
-  { name: "miami", displayName: "Miami" },
-  { name: "austin", displayName: "Austin" }
-];
 
 export function AIAssistant({ initialOpen = false }: AIAssistantProps) {
   const [isOpen, setIsOpen] = useState(initialOpen);
@@ -73,91 +59,15 @@ export function AIAssistant({ initialOpen = false }: AIAssistantProps) {
           type: "general",
           timestamp: new Date(),
           suggestions: [
-            "I need parking in San Francisco",
-            "Find parking in New York",
-            "I need parking in Chicago",
+            "I need parking for a concert",
+            "Help me find airport parking",
+            "I need daily commuter parking",
             "What parking spots do you recommend?"
           ]
         }
       ]);
     }
   }, []);
-
-  // Check if the user's message contains a city name
-  const checkForCityInQuery = (query: string): { found: boolean; city?: { name: string; displayName: string } } => {
-    const lowerQuery = query.toLowerCase();
-    for (const city of SUPPORTED_CITIES) {
-      if (lowerQuery.includes(city.name)) {
-        return { found: true, city };
-      }
-    }
-    return { found: false };
-  };
-
-  // Create a city-specific parking search response
-  const createCityParkingResponse = (city: { name: string; displayName: string }): Message => {
-    const searchUrl = `/search?location=${encodeURIComponent(city.displayName)}`;
-    
-    return {
-      id: Date.now().toString(),
-      content: `I found several available parking spots in ${city.displayName}! You can view them on the map or in a list format.`,
-      sender: "assistant",
-      type: "general",
-      timestamp: new Date(),
-      links: [
-        { 
-          text: `View parking in ${city.displayName}`, 
-          url: searchUrl 
-        }
-      ],
-      recommendations: [
-        {
-          location: `${city.displayName} Downtown`,
-          price: "$5.75/hr",
-          distance: "0.5 miles from center",
-          benefits: ["Covered", "24/7 Access", "Security"]
-        },
-        {
-          location: `${city.displayName} Uptown`,
-          price: "$4.50/hr",
-          distance: "1.2 miles from center",
-          benefits: ["EV Charging", "Well-lit"]
-        }
-      ],
-      suggestions: [
-        `Show me more parking in ${city.displayName}`,
-        "I need cheaper options",
-        "Do you have monthly parking?"
-      ]
-    };
-  };
-
-  // Create generic search response
-  const createGenericResponse = (query: string): Message => {
-    return {
-      id: Date.now().toString(),
-      content: "I can help you find parking! Here are some popular cities where we have available spaces:",
-      sender: "assistant",
-      type: "general",
-      timestamp: new Date(),
-      suggestions: SUPPORTED_CITIES.map(city => `I need parking in ${city.displayName}`),
-      links: SUPPORTED_CITIES.slice(0, 3).map(city => ({
-        text: `View parking in ${city.displayName}`,
-        url: `/search?location=${encodeURIComponent(city.displayName)}`
-      }))
-    };
-  };
-
-  // Local message handling (without API calls)
-  const handleLocalMessage = (userQuery: string): Message => {
-    const cityCheck = checkForCityInQuery(userQuery);
-    
-    if (cityCheck.found && cityCheck.city) {
-      return createCityParkingResponse(cityCheck.city);
-    }
-    
-    return createGenericResponse(userQuery);
-  };
 
   // Handle sending a message
   const handleSendMessage = async () => {
@@ -174,19 +84,51 @@ export function AIAssistant({ initialOpen = false }: AIAssistantProps) {
     setMessages(prev => [...prev, userMessage]);
     setInputValue("");
     setIsLoading(true);
-
+    
     try {
-      // Using local handling instead of API due to quota issues
-      const assistantMessage = handleLocalMessage(userMessage.content);
+      // Determine endpoint based on active tab
+      let endpoint = "/api/ai/assistant";
+      let type = "general";
       
-      // Simulate network delay for more natural conversation
-      setTimeout(() => {
-        setMessages(prev => [...prev, assistantMessage]);
-        setIsLoading(false);
-      }, 800);
-
+      switch (activeTab) {
+        case "event":
+          endpoint = "/api/ai/event-parking";
+          type = "event";
+          break;
+        case "airport":
+          endpoint = "/api/ai/airport-travel";
+          type = "airport";
+          break;
+        case "commuter":
+          endpoint = "/api/ai/commuter-parking";
+          type = "commuter";
+          break;
+        case "personalized":
+          endpoint = "/api/ai/assistant"; // Using general endpoint with personalized context
+          type = "personalized";
+          break;
+      }
+      
+      // Call API
+      const response = await apiRequest(endpoint, {
+        method: "POST",
+        body: JSON.stringify({ query: inputValue })
+      });
+      
+      // Add AI response to chat
+      const assistantMessage: Message = {
+        id: Date.now().toString(),
+        content: response.response || "I'm sorry, I couldn't process your request.",
+        sender: "assistant",
+        type: type as "general" | "event" | "airport" | "commuter" | "personalized",
+        timestamp: new Date(),
+        suggestions: response.suggestions,
+        recommendations: response.recommendations
+      };
+      
+      setMessages(prev => [...prev, assistantMessage]);
     } catch (error) {
-      console.error("Error processing message:", error);
+      console.error("Error sending message to AI assistant:", error);
       // Add error message
       const errorMessage: Message = {
         id: Date.now().toString(),
@@ -196,6 +138,7 @@ export function AIAssistant({ initialOpen = false }: AIAssistantProps) {
       };
       
       setMessages(prev => [...prev, errorMessage]);
+    } finally {
       setIsLoading(false);
     }
   };
@@ -295,24 +238,6 @@ export function AIAssistant({ initialOpen = false }: AIAssistantProps) {
                     </Badge>
                   )}
                   <div className="text-sm whitespace-pre-line">{message.content}</div>
-                  
-                  {/* Show links if available */}
-                  {message.links && message.links.length > 0 && (
-                    <div className="mt-2 space-y-1">
-                      {message.links.map((link, i) => (
-                        <Link key={i} href={link.url}>
-                          <Button 
-                            variant="outline" 
-                            size="sm" 
-                            className="w-full justify-start text-xs h-auto py-1.5"
-                          >
-                            <ExternalLink className="h-3.5 w-3.5 mr-1.5" />
-                            {link.text}
-                          </Button>
-                        </Link>
-                      ))}
-                    </div>
-                  )}
                   
                   {/* Show suggestions if available */}
                   {message.suggestions && message.suggestions.length > 0 && (
