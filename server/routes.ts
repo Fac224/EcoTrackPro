@@ -457,6 +457,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { query } = z.object({ query: z.string() }).parse(req.body);
       
+      // Check if OpenAI API key is available
+      if (!process.env.OPENAI_API_KEY) {
+        return res.status(200).json({
+          response: "I'm having trouble connecting to my knowledge base right now. Please try again later or contact support if this persists.",
+          type: "general",
+          suggestions: ["View available parking", "Search for parking", "How to contact support"],
+        });
+      }
+      
       // Get user context if authenticated
       let userContext;
       let userId = undefined;
@@ -566,13 +575,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }).optional()
       }).parse(req.body);
       
+      // Check if OpenAI API key is available
+      if (!process.env.OPENAI_API_KEY) {
+        return res.status(200).json({
+          recommendations: [
+            {
+              location: `Near ${location}`,
+              description: "We're having trouble connecting to our recommendations service. Please try again later.",
+              price: "Varies",
+              features: ["Easy booking through EasyPark"]
+            }
+          ]
+        });
+      }
+      
       const recommendations = await generateParkingRecommendations(location, preferences);
       res.json(recommendations);
     } catch (error) {
       if (error instanceof ZodError) {
         return handleZodError(error, res);
       }
-      return res.status(500).json({ message: "Failed to generate recommendations" });
+      console.error("Error generating recommendations:", error);
+      return res.status(200).json({
+        recommendations: [
+          {
+            location: "Various locations",
+            description: "We're sorry, we couldn't generate specific recommendations at this time. Please try again later.",
+            price: "Varies by location",
+            features: ["Use the search feature to find specific parking"]
+          }
+        ]
+      });
     }
   });
   
@@ -610,6 +643,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/ai/personalized", isAuthenticated, async (req, res) => {
     try {
+      // Check if OpenAI API key is available
+      if (!process.env.OPENAI_API_KEY) {
+        return res.status(200).json({
+          suggestions: [
+            {
+              type: "recent",
+              title: "Return to recent bookings",
+              description: "View or modify your recent parking reservations",
+              reason: "Based on your recent activity"
+            },
+            {
+              type: "popular",
+              title: "Explore popular spots",
+              description: "Discover top-rated parking spots in your area",
+              reason: "Popular with EasyPark users"
+            }
+          ]
+        });
+      }
+      
       const userId = req.session.userId as number;
       
       // Gather user history for personalization
@@ -617,9 +670,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Format booking data for the AI
       const pastBookings = userBookings.map(booking => ({
-        location: booking.location || "Unknown location",
-        date: booking.date || new Date().toISOString().slice(0, 10),
-        duration: booking.duration || "Unknown duration"
+        location: booking.driveway?.address || "Unknown location",
+        date: booking.startTime?.toISOString().slice(0, 10) || new Date().toISOString().slice(0, 10),
+        duration: `${Math.floor((booking.endTime.getTime() - booking.startTime.getTime()) / (1000 * 60 * 60))} hours` || "Unknown duration"
       }));
       
       // In a real app, you would have user's search history
@@ -632,7 +685,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.json(suggestions);
     } catch (error) {
-      return res.status(500).json({ message: "Failed to generate personalized suggestions" });
+      console.error("Error generating personalized suggestions:", error);
+      return res.status(200).json({
+        suggestions: [
+          {
+            type: "featured",
+            title: "Featured parking spots",
+            description: "Explore our featured parking spots",
+            reason: "Popular options selected by our team"
+          },
+          {
+            type: "airport",
+            title: "Airport parking",
+            description: "Find convenient parking for your next flight",
+            reason: "Many travelers use our airport parking options"
+          }
+        ]
+      });
     }
   });
 

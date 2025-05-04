@@ -4,7 +4,7 @@ import { Driveway } from "@shared/schema";
 import { Button } from "@/components/ui/button";
 import { MapView } from "@/components/ui/map-view";
 import { DrivewayCard } from "@/components/DrivewayCard";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Loader2 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
@@ -120,7 +120,10 @@ export function MapSearchModal({ isOpen, onClose, searchParams }: MapSearchModal
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-[90vw] max-h-[90vh] overflow-hidden flex flex-col p-0">
+      <DialogContent 
+        className="sm:max-w-[90vw] max-h-[90vh] overflow-hidden flex flex-col p-0"
+        aria-describedby="map-search-description"
+      >
         <DialogHeader className="p-4 border-b">
           <div className="flex items-center justify-between">
             <DialogTitle className="text-xl">
@@ -130,6 +133,9 @@ export function MapSearchModal({ isOpen, onClose, searchParams }: MapSearchModal
               <X className="h-4 w-4" />
             </Button>
           </div>
+          <DialogDescription id="map-search-description" className="sr-only">
+            Search results for parking spots near your selected location
+          </DialogDescription>
           
           {/* Search details summary */}
           <div className="flex flex-wrap text-sm text-gray-500 mt-1">
