@@ -372,7 +372,7 @@ export class MemStorage implements IStorage {
         availabilityEndTime: "22:00",
         availableWeekdays: "0,1,2,3,4,5,6",
         isActive: true,
-        imageUrl: "/src/assets/images/sf_driveway1.svg",
+        imageUrl: "/src/assets/images/sf_driveway1.jpg",
         amenities: "Security cameras,Well lit,Covered,Wide space",
         rating: 4.9,
         ratingCount: 27
