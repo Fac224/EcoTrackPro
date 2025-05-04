@@ -372,7 +372,7 @@ export class MemStorage implements IStorage {
         availabilityEndTime: "22:00",
         availableWeekdays: "0,1,2,3,4,5,6",
         isActive: true,
-        imageUrl: "/src/assets/images/sf_driveway1.jpg",
+        imageUrl: "/src/assets/images/sf_driveway1.svg",
         amenities: "Security cameras,Well lit,Covered,Wide space",
         rating: 4.9,
         ratingCount: 27
@@ -397,7 +397,7 @@ export class MemStorage implements IStorage {
         availabilityEndTime: "20:00",
         availableWeekdays: "1,2,3,4,5",
         isActive: true,
-        imageUrl: "/src/assets/images/sf_driveway2.jpg",
+        imageUrl: "/src/assets/images/sf_driveway2.svg",
         amenities: "Well lit,Near public transport,EV charging",
         rating: 4.7,
         ratingCount: 43
@@ -418,7 +418,7 @@ export class MemStorage implements IStorage {
         availabilityEndTime: "23:00",
         availableWeekdays: "0,1,2,3,4,5,6",
         isActive: true,
-        imageUrl: "/src/assets/images/sf_driveway3.jpg",
+        imageUrl: "/src/assets/images/sf_driveway3.svg",
         amenities: "Residential area,Wide space,Pet-friendly",
         rating: 4.5,
         ratingCount: 19
@@ -444,7 +444,7 @@ export class MemStorage implements IStorage {
         availabilityEndTime: "23:59",
         availableWeekdays: "0,1,2,3,4,5,6",
         isActive: true,
-        imageUrl: "/src/assets/images/ny_driveway1.jpg",
+        imageUrl: "/src/assets/images/ny_driveway1.svg",
         amenities: "Security cameras,Well lit,24/7 access,Covered",
         rating: 4.8,
         ratingCount: 52
@@ -469,7 +469,7 @@ export class MemStorage implements IStorage {
         availabilityEndTime: "21:00",
         availableWeekdays: "0,1,2,3,4,5,6",
         isActive: true,
-        imageUrl: "/src/assets/images/ny_driveway2.jpg",
+        imageUrl: "/src/assets/images/ny_driveway2.svg",
         amenities: "Gated,Security cameras,Wide space,Well lit",
         rating: 4.9,
         ratingCount: 38
@@ -490,7 +490,7 @@ export class MemStorage implements IStorage {
         availabilityEndTime: "23:00",
         availableWeekdays: "0,1,2,3,4,5,6",
         isActive: true,
-        imageUrl: "/src/assets/images/ny_driveway3.jpg",
+        imageUrl: "/src/assets/images/ny_driveway3.svg",
         amenities: "Residential area,Near subway,Well lit",
         rating: 4.6,
         ratingCount: 29

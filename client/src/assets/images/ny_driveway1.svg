@@ -1,0 +1,64 @@
+<svg width="800" height="600" viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background - Times Square Scene -->
+  <rect width="800" height="600" fill="#333333" />
+  
+  <!-- Sky with billboards glow -->
+  <rect width="800" height="300" fill="#1A1A2E" />
+  <rect x="50" y="50" width="200" height="100" rx="5" fill="#E74C3C" />
+  <rect x="300" y="30" width="150" height="80" rx="5" fill="#3498DB" />
+  <rect x="500" y="60" width="220" height="120" rx="5" fill="#F1C40F" />
+  <rect x="100" y="170" width="180" height="90" rx="5" fill="#9B59B6" />
+  <rect x="350" y="130" width="200" height="110" rx="5" fill="#2ECC71" />
+  
+  <!-- Billboard text mockups -->
+  <rect x="80" y="80" width="140" height="40" fill="#FFFFFF" />
+  <rect x="330" y="50" width="90" height="30" fill="#FFFFFF" />
+  <rect x="550" y="100" width="120" height="40" fill="#FFFFFF" />
+  
+  <!-- Skyscrapers -->
+  <rect x="0" y="200" width="100" height="400" fill="#4D4D4D" />
+  <rect x="120" y="150" width="80" height="450" fill="#5D5D5D" />
+  <rect x="220" y="180" width="120" height="420" fill="#4D4D4D" />
+  <rect x="360" y="120" width="90" height="480" fill="#5D5D5D" />
+  <rect x="470" y="200" width="70" height="400" fill="#4D4D4D" />
+  <rect x="560" y="150" width="110" height="450" fill="#5D5D5D" />
+  <rect x="690" y="180" width="110" height="420" fill="#4D4D4D" />
+  
+  <!-- Building Windows -->
+  <g fill="#F7DC6F">
+    <!-- Just a few windows as examples, would add more in a real implementation -->
+    <rect x="20" y="230" width="20" height="30" />
+    <rect x="60" y="230" width="20" height="30" />
+    <rect x="20" y="280" width="20" height="30" />
+    <rect x="60" y="280" width="20" height="30" />
+    
+    <rect x="140" y="180" width="15" height="25" />
+    <rect x="170" y="180" width="15" height="25" />
+    <rect x="140" y="220" width="15" height="25" />
+    <rect x="170" y="220" width="15" height="25" />
+    
+    <!-- More window patterns would be added for other buildings -->
+  </g>
+  
+  <!-- Street -->
+  <rect x="0" y="450" width="800" height="150" fill="#1C1C1C" />
+  <rect x="50" y="520" width="100" height="20" fill="#FFFF00" />
+  <rect x="200" y="520" width="100" height="20" fill="#FFFF00" />
+  <rect x="350" y="520" width="100" height="20" fill="#FFFF00" />
+  <rect x="500" y="520" width="100" height="20" fill="#FFFF00" />
+  <rect x="650" y="520" width="100" height="20" fill="#FFFF00" />
+  
+  <!-- Premium Parking Spot -->
+  <rect x="250" y="350" width="300" height="200" fill="#2C3E50" />
+  <rect x="270" y="370" width="260" height="160" fill="#34495E" stroke="#F1C40F" stroke-width="4" />
+  
+  <!-- Security Features -->
+  <circle cx="270" cy="370" r="10" fill="#E74C3C" />
+  <circle cx="530" cy="370" r="10" fill="#E74C3C" />
+  <rect x="380" y="355" width="40" height="15" fill="#BDC3C7" />
+  <rect x="390" y="345" width="20" height="10" fill="#7F8C8D" />
+  
+  <!-- Times Square Label -->
+  <rect x="50" y="50" width="300" height="60" rx="10" fill="rgba(0,0,0,0.7)" />
+  <text x="70" y="90" font-family="Arial" font-size="24" fill="white">Times Square Premium Spot</text>
+</svg>

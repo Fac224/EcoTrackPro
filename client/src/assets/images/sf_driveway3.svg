@@ -1,0 +1,65 @@
+<svg width="800" height="600" viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background - Haight-Ashbury Scene -->
+  <rect width="800" height="600" fill="#E8D0A9" />
+  
+  <!-- Sky -->
+  <rect width="800" height="200" fill="#87CEFA" />
+  
+  <!-- Golden Gate Park trees in background -->
+  <ellipse cx="100" y="200" rx="70" ry="90" fill="#228B22" />
+  <ellipse cx="240" y="200" rx="60" ry="80" fill="#2E8B57" />
+  <ellipse cx="350" y="190" rx="80" ry="100" fill="#228B22" />
+  <ellipse cx="480" y="200" rx="60" ry="80" fill="#2E8B57" />
+  <ellipse cx="600" y="190" rx="70" ry="90" fill="#228B22" />
+  <ellipse cx="720" y="200" rx="60" ry="80" fill="#2E8B57" />
+  
+  <!-- Victorian houses -->
+  <rect x="100" y="200" width="200" height="200" fill="#E74C3C" />
+  <rect x="320" y="200" width="200" height="200" fill="#9B59B6" />
+  <rect x="540" y="200" width="200" height="200" fill="#3498DB" />
+  
+  <!-- House details -->
+  <!-- House 1 -->
+  <rect x="130" y="230" width="40" height="60" fill="#FFFFFF" />
+  <rect x="190" y="230" width="40" height="60" fill="#FFFFFF" />
+  <rect x="150" y="320" width="60" height="80" fill="#FFFFFF" />
+  <polygon points="100,200 200,120 300,200" fill="#A93226" />
+  
+  <!-- House 2 -->
+  <rect x="350" y="230" width="40" height="60" fill="#FFFFFF" />
+  <rect x="410" y="230" width="40" height="60" fill="#FFFFFF" />
+  <rect x="370" y="320" width="60" height="80" fill="#FFFFFF" />
+  <polygon points="320,200 420,120 520,200" fill="#884EA0" />
+  
+  <!-- House 3 -->
+  <rect x="570" y="230" width="40" height="60" fill="#FFFFFF" />
+  <rect x="630" y="230" width="40" height="60" fill="#FFFFFF" />
+  <rect x="590" y="320" width="60" height="80" fill="#FFFFFF" />
+  <polygon points="540,200 640,120 740,200" fill="#2E86C1" />
+  
+  <!-- Street and sidewalk -->
+  <rect x="0" y="400" width="800" height="50" fill="#AAAAAA" />
+  <rect x="0" y="450" width="800" height="150" fill="#666666" />
+  
+  <!-- Driveway -->
+  <rect x="320" y="400" width="200" height="200" fill="#808080" />
+  
+  <!-- Car parked in driveway -->
+  <rect x="350" y="450" width="140" height="40" rx="10" fill="#F39C12" />
+  <rect x="370" y="430" width="100" height="30" fill="#F1C40F" />
+  <circle cx="380" cy="490" r="15" fill="#17202A" />
+  <circle cx="380" cy="490" r="8" fill="#7F8C8D" />
+  <circle cx="460" cy="490" r="15" fill="#17202A" />
+  <circle cx="460" cy="490" r="8" fill="#7F8C8D" />
+  
+  <!-- Pet (dog) in yard -->
+  <circle cx="280" cy="480" r="15" fill="#A0522D" />
+  <circle cx="280" cy="460" r="10" fill="#A0522D" />
+  <rect x="275" y="480" width="30" height="15" fill="#A0522D" />
+  <circle cx="290" cy="480" r="3" fill="#000000" />
+  <rect x="304" y="484" width="12" height="3" fill="#A0522D" />
+  
+  <!-- Haight-Ashbury Label -->
+  <rect x="50" y="50" width="340" height="60" rx="10" fill="rgba(0,0,0,0.7)" />
+  <text x="70" y="90" font-family="Arial" font-size="24" fill="white">Haight-Ashbury Neighborhood</text>
+</svg>

@@ -1,0 +1,38 @@
+<svg width="800" height="600" viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background - Marina District Scene -->
+  <rect width="800" height="600" fill="#A3C9D9" />
+  
+  <!-- Sky and Golden Gate Bridge in background -->
+  <rect width="800" height="200" fill="#87CEEB" />
+  <path d="M0,200 Q400,150 800,200" stroke="#E25822" stroke-width="8" fill="none" />
+  <path d="M150,200 L150,120 M650,200 L650,120" stroke="#E25822" stroke-width="12" fill="none" />
+  <line x1="150" y1="160" x2="650" y2="160" stroke="#E25822" stroke-width="3" />
+  
+  <!-- Marina houses -->
+  <rect x="50" y="200" width="700" height="150" fill="#F5F5DC" />
+  <rect x="100" y="220" width="80" height="100" fill="#4682B4" />
+  <rect x="220" y="220" width="80" height="100" fill="#E67E22" />
+  <rect x="340" y="220" width="80" height="100" fill="#27AE60" />
+  <rect x="460" y="220" width="80" height="100" fill="#9B59B6" />
+  <rect x="580" y="220" width="80" height="100" fill="#F1C40F" />
+  
+  <!-- Driveway -->
+  <rect x="100" y="350" width="600" height="200" fill="#778899" />
+  <rect x="150" y="350" width="500" height="200" fill="#A9A9A9" />
+  
+  <!-- Parked car -->
+  <rect x="300" y="400" width="200" height="60" rx="20" fill="#2C3E50" />
+  <rect x="320" y="430" width="160" height="30" fill="#34495E" />
+  <circle cx="340" cy="460" r="20" fill="#000" />
+  <circle cx="340" cy="460" r="10" fill="#333" />
+  <circle cx="460" cy="460" r="20" fill="#000" />
+  <circle cx="460" cy="460" r="10" fill="#333" />
+  
+  <!-- Security camera -->
+  <circle cx="700" cy="300" r="15" fill="#555" />
+  <rect x="685" y="300" width="30" height="20" fill="#333" />
+  
+  <!-- Premium Location Label -->
+  <rect x="50" y="50" width="300" height="60" rx="10" fill="rgba(0,0,0,0.7)" />
+  <text x="70" y="90" font-family="Arial" font-size="24" fill="white">Premium Marina Location</text>
+</svg>
