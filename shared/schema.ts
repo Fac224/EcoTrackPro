@@ -28,6 +28,10 @@ export const driveways = pgTable("driveways", {
   availabilityStartTime: text("availability_start_time").notNull(), // In 24hr format: "08:00"
   availabilityEndTime: text("availability_end_time").notNull(),     // In 24hr format: "18:00"
   availableWeekdays: text("available_weekdays").notNull(),          // CSV of weekdays: "1,2,3,4,5"
+  imageUrl: text("image_url"),                                      // URL to driveway image
+  amenities: text("amenities"),                                     // CSV of amenities: "Covered,Security,EV charging"
+  rating: doublePrecision("rating").default(0),                     // Average rating (0-5)
+  ratingCount: integer("rating_count").default(0),                  // Number of ratings
   createdAt: timestamp("created_at").defaultNow().notNull(),
   isActive: boolean("is_active").default(true).notNull(),
 });
@@ -76,6 +80,10 @@ export const insertDrivewaySchema = createInsertSchema(driveways)
     availabilityStartTime: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "Must be in 24hr format (HH:MM)"),
     availabilityEndTime: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "Must be in 24hr format (HH:MM)"),
     availableWeekdays: z.string().regex(/^[0-6](,[0-6])*$/, "Must be comma-separated weekday numbers (0-6)"),
+    imageUrl: z.string().optional(),
+    amenities: z.string().optional(),
+    rating: z.number().min(0).max(5).optional(),
+    ratingCount: z.number().min(0).optional(),
   });
 
 // Booking schemas
