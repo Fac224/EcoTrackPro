@@ -293,6 +293,12 @@ export async function generateParkingRecommendations(
     availability?: string;
   }>;
 }> {
+  // Check if OpenAI API key exists
+  if (!process.env.OPENAI_API_KEY) {
+    console.log("OpenAI API key not available, using fallback recommendations");
+    return getFallbackRecommendations(location, preferences);
+  }
+
   // Craft a prompt for generating parking recommendations
   let prompt = `Generate realistic and helpful parking recommendations near ${location}.`;
   
@@ -328,13 +334,107 @@ export async function generateParkingRecommendations(
     return parsedResponse;
   } catch (error) {
     console.error("Error generating parking recommendations:", error);
+    return getFallbackRecommendations(location, preferences);
+  }
+}
+
+function getFallbackRecommendations(
+  location: string,
+  preferences?: {
+    eventType?: string;
+    priceRange?: string;
+    amenities?: string[];
+    timeNeeded?: string;
+  }
+): {
+  recommendations: Array<{
+    location: string;
+    description: string;
+    price: string;
+    features: string[];
+    distance?: string;
+    availability?: string;
+  }>;
+} {
+  // Create standard recommendations based on the location
+  const isEvent = preferences?.eventType ? true : false;
+  const isAirport = location.toLowerCase().includes("airport");
+  
+  if (isAirport) {
     return {
       recommendations: [
         {
-          location: "Near " + location,
-          description: "We're sorry, we couldn't generate specific recommendations at this time. Please try again later.",
-          price: "Varies",
-          features: ["Easy booking through EasyPark"]
+          location: `${location} Short-Term Parking`,
+          description: "Convenient short-term parking directly at the terminal. Perfect for quick drop-offs and pickups.",
+          price: "$5-8/hour",
+          features: ["Easy access to terminals", "24/7 security", "Well-lit"],
+          distance: "0.1 miles from terminal"
+        },
+        {
+          location: `${location} Economy Lot`,
+          description: "Affordable long-term parking option with regular shuttle service to all terminals.",
+          price: "$15-25/day",
+          features: ["Free shuttle", "Covered options available", "Security patrols"],
+          distance: "2.5 miles from terminal"
+        },
+        {
+          location: `${location} Partner Parking`,
+          description: "Off-site parking with the best rates and reliable shuttle service.",
+          price: "$9-15/day",
+          features: ["Shuttle every 15 minutes", "Valet options", "Car wash available"],
+          distance: "3.2 miles from terminal"
+        }
+      ]
+    };
+  } else if (isEvent) {
+    return {
+      recommendations: [
+        {
+          location: `${location} Premium Event Parking`,
+          description: "Closest access to the venue with guaranteed spaces.",
+          price: "$25-40/event",
+          features: ["Reserved spaces", "Express entry/exit", "Walking distance to venue"],
+          distance: "0.2 miles from venue"
+        },
+        {
+          location: `${location} Standard Parking`,
+          description: "Official venue parking at a standard rate.",
+          price: "$15-20/event",
+          features: ["Official venue lot", "Security staff", "Multiple entry/exit points"],
+          distance: "0.5 miles from venue"
+        },
+        {
+          location: `${location} Overflow Parking`,
+          description: "Additional parking options when main lots are full.",
+          price: "$10-15/event",
+          features: ["Shuttle service", "Family-friendly", "Well-lit pathways"],
+          distance: "1.0 miles from venue"
+        }
+      ]
+    };
+  } else {
+    return {
+      recommendations: [
+        {
+          location: `Downtown ${location} Garage`,
+          description: "Centrally located covered parking in the heart of downtown.",
+          price: "$3-5/hour, $20-30/day",
+          features: ["Covered parking", "Security cameras", "Elevator access"],
+          distance: "Central location"
+        },
+        {
+          location: `${location} Street Parking`,
+          description: "Metered street parking available throughout the area.",
+          price: "$1-3/hour during enforcement hours",
+          features: ["Pay by app", "Some free after 6pm", "2-hour maximum in some zones"],
+          availability: "Varies by time of day"
+        },
+        {
+          location: `${location} Public Lot`,
+          description: "Municipal parking lot with good rates and central access.",
+          price: "$2-4/hour, $10-15/day",
+          features: ["Open 24/7", "Well-lit", "Multiple payment options"],
+          distance: "Various locations available"
         }
       ]
     };
@@ -343,7 +443,7 @@ export async function generateParkingRecommendations(
 
 // Function to analyze user behavior and provide personalized suggestions
 export async function generatePersonalizedSuggestions(
-  userId: number,
+  userId: number | string,
   userHistory: {
     pastBookings: Array<{
       location: string;

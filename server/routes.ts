@@ -668,8 +668,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Gather user history for personalization
       const userBookings = await storage.getUserBookings(userId);
       
+      // Get driveway details for each booking
+      const bookingsWithDetails = await Promise.all(
+        userBookings.map(async (booking) => {
+          const driveway = await storage.getDriveway(booking.drivewayId);
+          return {
+            ...booking,
+            driveway
+          };
+        })
+      );
+      
       // Format booking data for the AI
-      const pastBookings = userBookings.map(booking => ({
+      const pastBookings = bookingsWithDetails.map(booking => ({
         location: booking.driveway?.address || "Unknown location",
         date: booking.startTime?.toISOString().slice(0, 10) || new Date().toISOString().slice(0, 10),
         duration: `${Math.floor((booking.endTime.getTime() - booking.startTime.getTime()) / (1000 * 60 * 60))} hours` || "Unknown duration"
