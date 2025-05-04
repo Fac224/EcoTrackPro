@@ -1,5 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 
+declare global {
+  interface Window {
+    google: any;
+    initMap: () => void;
+  }
+}
+
 interface Marker {
   lat: number;
   lng: number;
@@ -16,27 +23,112 @@ interface MapViewProps {
   width?: string;
 }
 
-// This is a simplified map view component that simulates a map interface
-// In a real application, this would be replaced with a proper map library like Google Maps or Mapbox
 export function MapView({
   latitude,
   longitude,
-  zoom = 10,
+  zoom = 14,
   markers = [],
   height = "400px",
   width = "100%",
 }: MapViewProps) {
   const mapRef = useRef<HTMLDivElement>(null);
+  const [map, setMap] = useState<any>(null);
+  const [googleMarkers, setGoogleMarkers] = useState<any[]>([]);
   const [isMapLoaded, setIsMapLoaded] = useState(false);
+  const [isScriptLoaded, setIsScriptLoaded] = useState(false);
 
+  // Load Google Maps script
   useEffect(() => {
-    // Simulate map loading
-    const timer = setTimeout(() => {
-      setIsMapLoaded(true);
-    }, 500);
+    if (window.google?.maps) {
+      setIsScriptLoaded(true);
+      return;
+    }
 
-    return () => clearTimeout(timer);
+    const googleMapsApiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '';
+    
+    // Setup callback for when Google Maps script loads
+    window.initMap = () => {
+      setIsScriptLoaded(true);
+    };
+
+    // Load Google Maps script
+    const script = document.createElement('script');
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${googleMapsApiKey}&callback=initMap`;
+    script.async = true;
+    script.defer = true;
+    document.head.appendChild(script);
+
+    return () => {
+      // Cleanup if component unmounts
+      window.initMap = () => {};
+      document.head.removeChild(script);
+    };
   }, []);
+
+  // Initialize Google Map when script is loaded
+  useEffect(() => {
+    if (!isScriptLoaded || !mapRef.current) return;
+    
+    const mapOptions = {
+      center: { lat: latitude, lng: longitude },
+      zoom: zoom,
+      mapTypeId: window.google.maps.MapTypeId.ROADMAP,
+      mapTypeControl: false,
+      streetViewControl: false,
+      fullscreenControl: true,
+      zoomControl: true,
+    };
+
+    const googleMap = new window.google.maps.Map(mapRef.current, mapOptions);
+    setMap(googleMap);
+    setIsMapLoaded(true);
+  }, [isScriptLoaded, mapRef, latitude, longitude, zoom]);
+
+  // Add markers when the map is loaded or markers change
+  useEffect(() => {
+    if (!map || !isMapLoaded) return;
+    
+    // Clear previous markers
+    googleMarkers.forEach(marker => marker.setMap(null));
+    
+    // Create new markers
+    const newMarkers = markers.map(marker => {
+      const googleMarker = new window.google.maps.Marker({
+        position: { lat: marker.lat, lng: marker.lng },
+        map: map,
+        title: marker.title,
+        icon: {
+          path: window.google.maps.SymbolPath.CIRCLE,
+          fillColor: '#f03e3e',
+          fillOpacity: 1,
+          strokeColor: '#ffffff',
+          strokeWeight: 2,
+          scale: 8,
+        }
+      });
+      
+      if (marker.onClick) {
+        googleMarker.addListener('click', marker.onClick);
+      }
+      
+      // Add info window for each marker
+      const infoWindow = new window.google.maps.InfoWindow({
+        content: `<div class="p-2 text-sm"><strong>${marker.title}</strong></div>`
+      });
+      
+      googleMarker.addListener('mouseover', () => {
+        infoWindow.open(map, googleMarker);
+      });
+      
+      googleMarker.addListener('mouseout', () => {
+        infoWindow.close();
+      });
+      
+      return googleMarker;
+    });
+    
+    setGoogleMarkers(newMarkers);
+  }, [map, isMapLoaded, markers]);
 
   return (
     <div
@@ -49,71 +141,11 @@ export function MapView({
         overflow: "hidden",
       }}
     >
-      {!isMapLoaded ? (
+      {!isScriptLoaded && (
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+          <span className="ml-3 text-gray-600">Loading map...</span>
         </div>
-      ) : (
-        <>
-          {/* Simple map background with grid */}
-          <div
-            className="absolute inset-0"
-            style={{
-              backgroundImage: `linear-gradient(to right, #d1d5db 1px, transparent 1px),
-                              linear-gradient(to bottom, #d1d5db 1px, transparent 1px)`,
-              backgroundSize: `${zoom * 5}px ${zoom * 5}px`,
-              backgroundPosition: "center",
-            }}
-          ></div>
-
-          {/* Display center point */}
-          <div
-            className="absolute rounded-full bg-primary/10 border-4 border-primary"
-            style={{
-              height: "40px",
-              width: "40px",
-              left: "calc(50% - 20px)",
-              top: "calc(50% - 20px)",
-            }}
-            title="Center"
-          ></div>
-
-          {/* Display markers */}
-          {markers.map((marker, index) => {
-            // Calculate position relative to center point
-            const latOffset = (marker.lat - latitude) * zoom * 20;
-            const lngOffset = (marker.lng - longitude) * zoom * 20;
-
-            return (
-              <div
-                key={index}
-                className="absolute flex flex-col items-center cursor-pointer"
-                style={{
-                  transform: `translate(-50%, -100%)`,
-                  top: `calc(50% - ${latOffset}px)`,
-                  left: `calc(50% + ${lngOffset}px)`,
-                }}
-                onClick={marker.onClick}
-                title={marker.title}
-              >
-                <div className="flex flex-col items-center">
-                  <div className="bg-white text-xs font-semibold py-1 px-2 rounded shadow-md mb-1 max-w-[150px] truncate">
-                    {marker.title}
-                  </div>
-                  <div className="w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-t-[8px] border-t-white"></div>
-                </div>
-                <div className="h-6 w-6 rounded-full bg-red-500 border-2 border-white flex items-center justify-center text-white text-xs shadow-lg">
-                  P
-                </div>
-              </div>
-            );
-          })}
-
-          {/* Simple attribution */}
-          <div className="absolute bottom-1 right-1 text-xs text-gray-500 bg-white/70 px-1 rounded">
-            EasyPark Map View
-          </div>
-        </>
       )}
     </div>
   );

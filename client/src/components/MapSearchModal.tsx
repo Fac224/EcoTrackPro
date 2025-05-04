@@ -1,12 +1,11 @@
 import { useState, useEffect } from "react";
-import { X } from "lucide-react";
+import { X, Loader2 } from "lucide-react";
 import { Driveway } from "@shared/schema";
 import { Button } from "@/components/ui/button";
 import { MapView } from "@/components/ui/map-view";
 import { DrivewayCard } from "@/components/DrivewayCard";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Loader2 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { formatDate, formatTimeString } from "@/lib/utils";
 
@@ -24,36 +23,58 @@ interface MapSearchModalProps {
 }
 
 const getGeocodeFromLocation = async (location: string) => {
-  // This is a mock geocode function that returns coordinates for specific locations
-  // In a real app, this would use the Google Geocoding API with the Google Maps API key
-  
-  const locationMap: { [key: string]: { lat: number; lng: number } } = {
-    "new york": { lat: 40.7128, lng: -74.0060 },
-    "los angeles": { lat: 34.0522, lng: -118.2437 },
-    "chicago": { lat: 41.8781, lng: -87.6298 },
-    "san francisco": { lat: 37.7749, lng: -122.4194 },
-    "miami": { lat: 25.7617, lng: -80.1918 },
-    "austin": { lat: 30.2672, lng: -97.7431 },
-    "seattle": { lat: 47.6062, lng: -122.3321 },
-    "boston": { lat: 42.3601, lng: -71.0589 },
-    "philadelphia": { lat: 39.9526, lng: -75.1652 },
-    "houston": { lat: 29.7604, lng: -95.3698 },
-    "phoenix": { lat: 33.4484, lng: -112.0740 },
-    "san diego": { lat: 32.7157, lng: -117.1611 },
-    "denver": { lat: 39.7392, lng: -104.9903 },
-    "brooklyn": { lat: 40.6782, lng: -73.9442 },
-  };
-
-  // Search for a partial match
-  const normalizedLocation = location.toLowerCase();
-  for (const [key, coords] of Object.entries(locationMap)) {
-    if (normalizedLocation.includes(key)) {
-      return coords;
+  try {
+    // Use Google Maps Geocoding API if key is available
+    const googleMapsApiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+    
+    if (googleMapsApiKey) {
+      // Send request to Google Maps Geocoding API
+      const response = await fetch(
+        `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(location)}&key=${googleMapsApiKey}`
+      );
+      
+      const data = await response.json();
+      
+      if (data.status === 'OK' && data.results && data.results.length > 0) {
+        const { lat, lng } = data.results[0].geometry.location;
+        return { lat, lng };
+      }
     }
-  }
+    
+    // Fallback to hardcoded locations if API fails or key is not available
+    const locationMap: { [key: string]: { lat: number; lng: number } } = {
+      "new york": { lat: 40.7128, lng: -74.0060 },
+      "los angeles": { lat: 34.0522, lng: -118.2437 },
+      "chicago": { lat: 41.8781, lng: -87.6298 },
+      "san francisco": { lat: 37.7749, lng: -122.4194 },
+      "miami": { lat: 25.7617, lng: -80.1918 },
+      "austin": { lat: 30.2672, lng: -97.7431 },
+      "seattle": { lat: 47.6062, lng: -122.3321 },
+      "boston": { lat: 42.3601, lng: -71.0589 },
+      "philadelphia": { lat: 39.9526, lng: -75.1652 },
+      "houston": { lat: 29.7604, lng: -95.3698 },
+      "phoenix": { lat: 33.4484, lng: -112.0740 },
+      "san diego": { lat: 32.7157, lng: -117.1611 },
+      "denver": { lat: 39.7392, lng: -104.9903 },
+      "brooklyn": { lat: 40.6782, lng: -73.9442 },
+    };
 
-  // Default to San Francisco if no match is found
-  return { lat: 37.7749, lng: -122.4194 };
+    // Search for a partial match
+    const normalizedLocation = location.toLowerCase();
+    for (const [key, coords] of Object.entries(locationMap)) {
+      if (normalizedLocation.includes(key)) {
+        return coords;
+      }
+    }
+
+    // Default to San Francisco if no match is found
+    return { lat: 37.7749, lng: -122.4194 };
+    
+  } catch (error) {
+    console.error("Error geocoding location:", error);
+    // Default to San Francisco if error occurs
+    return { lat: 37.7749, lng: -122.4194 };
+  }
 };
 
 export function MapSearchModal({ isOpen, onClose, searchParams }: MapSearchModalProps) {
