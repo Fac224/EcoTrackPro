@@ -24,21 +24,21 @@ interface MapSearchModalProps {
 
 const getGeocodeFromLocation = async (location: string) => {
   try {
-    // Use Google Maps Geocoding API if key is available
-    const googleMapsApiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+    // Hard-coded key to ensure it works in all environments
+    const googleMapsApiKey = 'AIzaSyAanMM_SHlW67y28F-0wAeGWDJ40ocn16A';
     
-    if (googleMapsApiKey) {
-      // Send request to Google Maps Geocoding API
-      const response = await fetch(
-        `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(location)}&key=${googleMapsApiKey}`
-      );
-      
-      const data = await response.json();
-      
-      if (data.status === 'OK' && data.results && data.results.length > 0) {
-        const { lat, lng } = data.results[0].geometry.location;
-        return { lat, lng };
-      }
+    // Send request to Google Maps Geocoding API
+    const response = await fetch(
+      `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(location)}&key=${googleMapsApiKey}`
+    );
+    
+    const data = await response.json();
+    console.log("Geocoding response:", data);
+    
+    if (data.status === 'OK' && data.results && data.results.length > 0) {
+      const { lat, lng } = data.results[0].geometry.location;
+      console.log(`Geocoded ${location} to: lat=${lat}, lng=${lng}`);
+      return { lat, lng };
     }
     
     // Fallback to hardcoded locations if API fails or key is not available

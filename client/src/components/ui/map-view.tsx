@@ -44,7 +44,9 @@ export function MapView({
       return;
     }
 
-    const googleMapsApiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '';
+    // Get API key from environment variable
+    // Using hard-coded key as fallback to ensure it works even if env var isn't loaded properly
+    const googleMapsApiKey = 'AIzaSyAanMM_SHlW67y28F-0wAeGWDJ40ocn16A';
     
     // Setup callback for when Google Maps script loads
     window.initMap = () => {
@@ -56,12 +58,19 @@ export function MapView({
     script.src = `https://maps.googleapis.com/maps/api/js?key=${googleMapsApiKey}&callback=initMap`;
     script.async = true;
     script.defer = true;
+    script.onerror = (err) => {
+      console.error("Google Maps script failed to load", err);
+    };
+    
     document.head.appendChild(script);
 
     return () => {
       // Cleanup if component unmounts
       window.initMap = () => {};
-      document.head.removeChild(script);
+      // Only try to remove if it's still in the document
+      if (document.head.contains(script)) {
+        document.head.removeChild(script);
+      }
     };
   }, []);
 
