@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Calendar, MapPin, DollarSign, Clock, Car } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { Badge } from "@/components/ui/badge";
+import { MapSearchModal } from "@/components/MapSearchModal";
 
 interface EventParkingRecommendation {
   location: string;
@@ -31,6 +32,52 @@ export function EventParkingRecommendations({ className }: EventParkingRecommend
   const [isLoading, setIsLoading] = useState(false);
   const [recommendations, setRecommendations] = useState<EventParkingRecommendation[]>([]);
   const [hasSearched, setHasSearched] = useState(false);
+  
+  // Map modal state
+  const [isMapModalOpen, setIsMapModalOpen] = useState(false);
+  const [selectedLocation, setSelectedLocation] = useState("");
+  const [mapSearchParams, setMapSearchParams] = useState<{
+    location: string;
+    date?: string;
+    startTime?: string;
+    endTime?: string;
+  }>({ 
+    location: "" 
+  });
+  
+  // Handle viewing available spots for a recommendation
+  const handleViewAvailability = (locationName: string) => {
+    // Get current date in YYYY-MM-DD format
+    const today = new Date().toISOString().split('T')[0];
+    
+    // Parse duration from timeNeeded if available
+    let startTime = "09:00";
+    let endTime = "17:00";
+    
+    if (timeNeeded) {
+      if (timeNeeded === "2-3 hours") {
+        endTime = "12:00";
+      } else if (timeNeeded === "3-5 hours") {
+        endTime = "14:00";
+      } else if (timeNeeded === "5+ hours") {
+        endTime = "17:00";
+      } else if (timeNeeded === "all day") {
+        endTime = "23:00";
+      }
+    }
+    
+    // Set up search parameters for the map modal
+    setSelectedLocation(locationName);
+    setMapSearchParams({
+      location: locationName,
+      date: today,
+      startTime,
+      endTime
+    });
+    
+    // Open the map modal
+    setIsMapModalOpen(true);
+  };
 
   const handleAmenityToggle = (amenity: string) => {
     if (amenities.includes(amenity)) {
@@ -228,6 +275,17 @@ export function EventParkingRecommendations({ className }: EventParkingRecommend
                         <Clock className="h-3 w-3 mr-1" /> {rec.availability}
                       </div>
                     )}
+                    
+                    <div className="mt-3 pt-3 border-t border-gray-100">
+                      <Button 
+                        variant="default" 
+                        size="sm" 
+                        className="w-full"
+                        onClick={() => handleViewAvailability(rec.location)}
+                      >
+                        <MapPin className="h-3.5 w-3.5 mr-1" /> View Available Spots
+                      </Button>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -242,6 +300,13 @@ export function EventParkingRecommendations({ className }: EventParkingRecommend
           </div>
         </CardFooter>
       )}
+      
+      {/* Map Modal for viewing available spots */}
+      <MapSearchModal 
+        isOpen={isMapModalOpen}
+        onClose={() => setIsMapModalOpen(false)}
+        searchParams={mapSearchParams}
+      />
     </Card>
   );
 }
