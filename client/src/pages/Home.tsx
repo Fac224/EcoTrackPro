@@ -158,9 +158,11 @@ export default function Home() {
               <div className="bg-white rounded-lg shadow-md overflow-hidden">
                 <div className="h-48 w-full relative">
                   <img 
-                    src="https://images.unsplash.com/photo-1638359942431-4db98544d532?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80" 
+                    src="https://media-hosting.imagekit.io/ae6b392d25464cf7/Screenshot%202025-05-07%20at%208.39.05%E2%80%AFPM.png?Expires=1841272754&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=q8ogfqr2PNMfEVFkN15OR8V3EHaa4UVuMsjjZnyQs9Az8YanGUuPzpGQ0Ayu7uL79YminVMLybaoK-AtU3003vy-IH7jULY4Lhxk326QEY9KgEPuF4XTRk276Uxzt0zbCg4N3blOIlYCm6FVpnwPs0OmJNvyWNsgV2jAHgtYl0RRUFn2dTnuzRVJv0IVrcldRsEjfcUTnnvAgSE9q63o96zsxZv86KdXY~rbLYtlSB9rx10Qa0icKSvU3F10d-oXfpO3IX7NYHhe~fvebgA4Fzwq8stwTxNb94bJ0YKu6hGFZAd~-IOtFJPIXBIW4BY5w1l9VW4Kb69k60KJl~riPg__" 
                     alt="Residential driveway" 
                     className="w-full h-full object-cover"
+                    loading="eager"
+                    crossOrigin="anonymous"
                   />
                   <div className="absolute top-4 right-4 bg-white px-2 py-1 rounded-full text-sm font-semibold text-primary">
                     $4.50/hr
@@ -192,16 +194,18 @@ export default function Home() {
               <div className="bg-white rounded-lg shadow-md overflow-hidden">
                 <div className="h-48 w-full relative">
                   <img 
-                    src="https://images.unsplash.com/photo-1579454983055-ef3eef7ae250?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80" 
+                    src="https://media-hosting.imagekit.io/6800d73188a54589/Screenshot%202025-05-07%20at%208.10.02%E2%80%AFPM.png?Expires=1841271014&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=XMHGkpTLnLV15l0kUJrsZkLwreTCRnyrNNuTsljNkyZGIfKcWDHRqok0X2xhCJZCP3VrTPKTWQ1UtjB4xELclFpYJyODD3e2Uz~dMjX7808vPbxXy3BOO0kdh79IqKcdTFKcQYSDuv3bzu9LmWI~4pvbPbRTDM2faUqeSMKHK0BaBRqwRuglh-IaLlVba9L6Sy~WjIxHNfmQ4aajsuVpU0~Oo64wQW1hxW1nu7-74JCJgwsQDycnVLwikUY7fNwAmUQxkvUO5maT6iqZWnHolyCASZXVhpZJyQIBeHxl6bDrD2HEO~Ef8vHVxAA6NPctN9ynr0yvIyLSJCflwXNiuw__" 
                     alt="Urban garage entry" 
                     className="w-full h-full object-cover"
+                    loading="eager"
+                    crossOrigin="anonymous"
                   />
                   <div className="absolute top-4 right-4 bg-white px-2 py-1 rounded-full text-sm font-semibold text-primary">
                     $6.75/hr
                   </div>
                 </div>
                 <div className="p-4">
-                  <h3 className="font-semibold text-lg mb-1">1720 Market Street</h3>
+                  <h3 className="font-semibold text-lg mb-1">1722 Market Street, Unit G</h3>
                   <p className="text-gray-600 text-sm mb-2">San Francisco, CA 94102</p>
                   <div className="flex items-center text-sm text-gray-500 mb-3">
                     <span className="flex items-center mr-3">
@@ -226,9 +230,11 @@ export default function Home() {
               <div className="bg-white rounded-lg shadow-md overflow-hidden">
                 <div className="h-48 w-full relative">
                   <img 
-                    src="https://images.unsplash.com/photo-1598971861713-54ad16a7e72e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80" 
+                    src="https://media-hosting.imagekit.io/aebff09f96474fa7/Screenshot%202025-05-07%20at%208.13.08%E2%80%AFPM.png?Expires=1841271197&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=G-9IPw9nZLvVivDdAokPrF8J1Fg81cqk8kYtpcvbFWNFZ3qJysUjqljjIDnrmA5iyMcCwlRFLr62RqYVGGvOBxiRxfoePuyXzzl6i5ImkpU7J8d~GivZ7dNDtFpuUC4SaXeXqTXgDGamQqd~UXvaddXnU-ba6Zmi5kRWIw3y1QZ5BlvroFz0mJFHewu8nEhevlVnbubbIW2SfZpauAYNUADRW76Jg3mOFu1PnVqgSGkB7IdHH-G1M01WJ7PRJRSDp2FsksjI2durhzPlC9ho~yQ6hQiam941zKJY71OlxofaBBwOFFqRU1A~zKBP75F1b9hzjPZB5GUQOkci3tv5~A__" 
                     alt="Covered parking garage" 
                     className="w-full h-full object-cover"
+                    loading="eager"
+                    crossOrigin="anonymous"
                   />
                   <div className="absolute top-4 right-4 bg-white px-2 py-1 rounded-full text-sm font-semibold text-primary">
                     $8.00/hr
@@ -236,7 +242,7 @@ export default function Home() {
                 </div>
                 <div className="p-4">
                   <h3 className="font-semibold text-lg mb-1">847 Pine Avenue</h3>
-                  <p className="text-gray-600 text-sm mb-2">Seattle, WA 98101</p>
+                  <p className="text-gray-600 text-sm mb-2">San Francisco, CA 94108</p>
                   <div className="flex items-center text-sm text-gray-500 mb-3">
                     <span className="flex items-center mr-3">
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
