@@ -65,6 +65,10 @@ export const reviews = pgTable("reviews", {
 export const insertUserSchema = createInsertSchema(users)
   .omit({ id: true, createdAt: true })
   .extend({
+    username: z.string()
+      .min(3, "Username must be at least 3 characters")
+      .max(30, "Username cannot exceed 30 characters")
+      .regex(/^[a-zA-Z0-9_-]+$/, "Username can only contain letters, numbers, underscores, and hyphens"),
     password: z.string().min(6, "Password must be at least 6 characters"),
     email: z.string().email("Please enter a valid email"),
     phoneNumber: z.string().optional(),

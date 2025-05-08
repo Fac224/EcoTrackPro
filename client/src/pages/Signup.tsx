@@ -166,6 +166,9 @@ export default function Signup() {
                             disabled={isLoading}
                           />
                         </FormControl>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          Letters, numbers, underscores, and hyphens only
+                        </p>
                         <FormMessage />
                       </FormItem>
                     )}
