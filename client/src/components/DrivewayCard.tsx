@@ -43,21 +43,26 @@ export function DrivewayCard({ driveway, showBookButton = true }: DrivewayCardPr
       <div className="h-48 bg-gray-200 relative overflow-hidden">
         {driveway.imageUrl ? (
           <img 
-            src={driveway.imageUrl} 
+            src={driveway.imageUrl}
             alt={`Driveway at ${driveway.address}`} 
             className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+            onError={(e) => {
+              // If image fails to load, show fallback
+              (e.target as HTMLImageElement).onerror = null;
+              (e.target as HTMLImageElement).style.display = 'none';
+              (e.target as HTMLImageElement).parentElement?.querySelector('.fallback-image')?.classList.remove('hidden');
+            }}
           />
-        ) : (
-          <div className="h-full w-full flex items-center justify-center">
-            <div className="text-gray-400">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-                <circle cx="8.5" cy="8.5" r="1.5" />
-                <path d="M21 15l-5-5L5 21" />
-              </svg>
-            </div>
+        ) : null}
+        <div className={`fallback-image h-full w-full flex items-center justify-center ${driveway.imageUrl ? 'hidden' : ''}`}>
+          <div className="text-gray-400">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+              <circle cx="8.5" cy="8.5" r="1.5" />
+              <path d="M21 15l-5-5L5 21" />
+            </svg>
           </div>
-        )}
+        </div>
       </div>
       
       <CardContent className="p-6 flex-grow flex flex-col">
