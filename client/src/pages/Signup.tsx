@@ -34,8 +34,8 @@ export default function Signup() {
   const [isLoading, setIsLoading] = useState(false);
   
   // Get redirect param if exists
-  const params = new URLSearchParams(location.search);
-  const redirectPath = params.get("redirect") || "/dashboard";
+  const searchParams = location.search ? new URLSearchParams(location.search) : new URLSearchParams();
+  const redirectPath = searchParams.get("redirect") || "/dashboard";
   
   // Check if user is already logged in
   const { data: user, isLoading: isCheckingAuth } = useQuery({
@@ -70,11 +70,23 @@ export default function Signup() {
     setError("");
     
     try {
+      // Log form validation results for debugging
+      console.log("Form validated, submitting values:", values);
+      
       // Omit confirmPassword from the values sent to API
       const { confirmPassword, ...signupData } = values;
       
       const response = await apiRequest("POST", "/api/register", signupData);
+      
+      // Check if there was an error in the response
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Registration error:", errorData);
+        throw new Error(errorData.message || "Registration failed");
+      }
+      
       const data = await response.json();
+      console.log("Registration success:", data);
       
       // If successful registration
       queryClient.invalidateQueries({ queryKey: ['/api/me'] });
@@ -88,6 +100,7 @@ export default function Signup() {
       // Redirect after successful registration
       navigate(redirectPath);
     } catch (error) {
+      console.error("Registration error:", error);
       if (error instanceof Error) {
         setError(error.message);
       } else {

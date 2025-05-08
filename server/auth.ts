@@ -83,6 +83,27 @@ export function setupAuth(app: Express) {
 
   app.post("/api/register", async (req, res, next) => {
     try {
+      // Validate the request body using Zod schema
+      const { insertUserSchema } = await import("@shared/schema");
+      
+      // Parse and validate user data
+      try {
+        // We'll use the insertUserSchema directly but validate against a copy of request body
+        // to avoid mutations during validation
+        const validationResult = insertUserSchema.safeParse(req.body);
+        if (!validationResult.success) {
+          const formattedErrors = validationResult.error.format();
+          console.log("Validation failed:", formattedErrors);
+          return res.status(400).json({ 
+            message: "Validation failed", 
+            errors: formattedErrors 
+          });
+        }
+      } catch (validationError) {
+        console.error("Validation error:", validationError);
+        return res.status(400).json({ message: "Invalid user data provided" });
+      }
+      
       const { username, email, password, name, phoneNumber } = req.body;
       
       // Check if username or email already exists
@@ -115,6 +136,7 @@ export function setupAuth(app: Express) {
         res.status(201).json(userWithoutPassword);
       });
     } catch (error) {
+      console.error("Registration error:", error);
       next(error);
     }
   });
