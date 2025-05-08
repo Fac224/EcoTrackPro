@@ -367,6 +367,16 @@ export class MemStorage implements IStorage {
       phoneNumber: "555-444-5555",
     };
     
+    // Special user account for Felix - NOTE: For test purposes, we're storing a plain text password
+    // In a real-world scenario, we would hash this password, but for easy testing we're keeping it simple
+    const felixUser: InsertUser = {
+      username: "felix_chong",
+      email: "fac224@gmail.com",
+      password: "123456",  // This will be put through the authentication hash flow
+      name: "Felix Chong",
+      phoneNumber: "555-666-7777",
+    };
+    
     // Create users and their associated driveways
     this.createUser(user1).then(user => {
       // San Francisco featured driveway 1
@@ -464,6 +474,9 @@ export class MemStorage implements IStorage {
       
       this.createDriveway(urbanGarageDriveway);
     });
+    
+    // Create Felix's account
+    this.createUser(felixUser);
     
     this.createUser(user4).then(user => {
       // New York featured driveway 2
