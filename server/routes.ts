@@ -131,7 +131,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Verify ownership
-      if (driveway.ownerId !== req.user.id) {
+      if (!req.user || driveway.ownerId !== req.user.id) {
         return res.status(403).json({ message: "Not authorized to update this driveway" });
       }
       
@@ -157,7 +157,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Verify ownership
-      if (driveway.ownerId !== req.user.id) {
+      if (!req.user || driveway.ownerId !== req.user.id) {
         return res.status(403).json({ message: "Not authorized to delete this driveway" });
       }
       
@@ -180,6 +180,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/my-driveways", isAuthenticated, async (req, res) => {
     try {
+      if (!req.user) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+      
       const userId = req.user.id;
       const driveways = await storage.getDrivewaysByOwner(userId);
       return res.status(200).json(driveways);
@@ -194,6 +198,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const bookingData = insertBookingSchema.parse(req.body);
       
       // Assign current user
+      if (!req.user) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
       bookingData.userId = req.user.id;
       
       // Check if driveway exists
@@ -217,6 +224,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/bookings/:id", isAuthenticated, async (req, res) => {
     try {
+      if (!req.user) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+      
       const bookingId = parseInt(req.params.id);
       const booking = await storage.getBooking(bookingId);
       
@@ -238,6 +249,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/my-bookings", isAuthenticated, async (req, res) => {
     try {
+      if (!req.user) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+      
       const userId = req.user.id;
       const bookings = await storage.getUserBookings(userId);
       return res.status(200).json(bookings);
@@ -248,6 +263,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/driveways/:id/bookings", isAuthenticated, async (req, res) => {
     try {
+      if (!req.user) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+      
       const drivewayId = parseInt(req.params.id);
       const driveway = await storage.getDriveway(drivewayId);
       
