@@ -125,7 +125,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Verify ownership
-      if (driveway.ownerId !== req.session.userId) {
+      if (driveway.ownerId !== req.user.id) {
         return res.status(403).json({ message: "Not authorized to update this driveway" });
       }
       
@@ -151,7 +151,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Verify ownership
-      if (driveway.ownerId !== req.session.userId) {
+      if (driveway.ownerId !== req.user.id) {
         return res.status(403).json({ message: "Not authorized to delete this driveway" });
       }
       
@@ -188,7 +188,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const bookingData = insertBookingSchema.parse(req.body);
       
       // Assign current user
-      bookingData.userId = req.session.userId as number;
+      bookingData.userId = req.user.id;
       
       // Check if driveway exists
       const driveway = await storage.getDriveway(bookingData.drivewayId);
@@ -220,7 +220,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Verify it's the user's booking or the driveway owner
       const driveway = await storage.getDriveway(booking.drivewayId);
-      if (booking.userId !== req.session.userId && driveway?.ownerId !== req.session.userId) {
+      if (booking.userId !== req.user.id && driveway?.ownerId !== req.user.id) {
         return res.status(403).json({ message: "Not authorized to view this booking" });
       }
       
@@ -232,7 +232,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/my-bookings", isAuthenticated, async (req, res) => {
     try {
-      const userId = req.session.userId as number;
+      const userId = req.user.id;
       const bookings = await storage.getUserBookings(userId);
       return res.status(200).json(bookings);
     } catch (error) {
@@ -325,7 +325,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const reviewData = insertReviewSchema.parse(req.body);
       
       // Assign current user
-      reviewData.userId = req.session.userId as number;
+      reviewData.userId = req.user.id;
       
       // Check if driveway exists
       const driveway = await storage.getDriveway(reviewData.drivewayId);
@@ -334,7 +334,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Check if the user has booked this driveway
-      const userBookings = await storage.getUserBookings(req.session.userId as number);
+      const userBookings = await storage.getUserBookings(req.user.id);
       const hasBookedDriveway = userBookings.some((booking) => booking.drivewayId === reviewData.drivewayId);
       
       if (!hasBookedDriveway) {
@@ -562,7 +562,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
-      const userId = req.session.userId as number;
+      const userId = req.user.id;
       
       // Gather user history for personalization
       const userBookings = await storage.getUserBookings(userId);
