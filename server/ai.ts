@@ -293,27 +293,22 @@ export async function generateParkingRecommendations(
     availability?: string;
   }>;
 }> {
-  // Check if OpenAI API key exists
-  if (!process.env.OPENAI_API_KEY) {
-    console.log("OpenAI API key not available, using fallback recommendations");
-    return getFallbackRecommendations(location, preferences);
-  }
-
-  // Craft a prompt for generating parking recommendations
-  let prompt = `Generate realistic and helpful parking recommendations near ${location}.`;
-  
-  if (preferences) {
-    if (preferences.eventType) prompt += ` The user is looking for parking for a ${preferences.eventType}.`;
-    if (preferences.priceRange) prompt += ` Their price range is ${preferences.priceRange}.`;
-    if (preferences.amenities && preferences.amenities.length > 0) {
-      prompt += ` They prefer parking with the following amenities: ${preferences.amenities.join(", ")}.`;
-    }
-    if (preferences.timeNeeded) prompt += ` They need parking for ${preferences.timeNeeded}.`;
-  }
-  
-  prompt += ` Please provide 3-5 specific, realistic recommendations with location names, descriptions, pricing, and features.`;
-
+  // Check if OpenAI API key exists or try to use it
   try {
+    // Craft a prompt for generating parking recommendations
+    let prompt = `Generate realistic and helpful parking recommendations near ${location}.`;
+    
+    if (preferences) {
+      if (preferences.eventType) prompt += ` The user is looking for parking for a ${preferences.eventType}.`;
+      if (preferences.priceRange) prompt += ` Their price range is ${preferences.priceRange}.`;
+      if (preferences.amenities && preferences.amenities.length > 0) {
+        prompt += ` They prefer parking with the following amenities: ${preferences.amenities.join(", ")}.`;
+      }
+      if (preferences.timeNeeded) prompt += ` They need parking for ${preferences.timeNeeded}.`;
+    }
+    
+    prompt += ` Please provide 3-5 specific, realistic recommendations with location names, descriptions, pricing, and features.`;
+
     const response = await openai.chat.completions.create({
       model: "gpt-4o",
       messages: [
@@ -338,6 +333,7 @@ export async function generateParkingRecommendations(
   }
 }
 
+// Function to provide fallback recommendations when API fails
 function getFallbackRecommendations(
   location: string,
   preferences?: {
@@ -359,8 +355,44 @@ function getFallbackRecommendations(
   // Create standard recommendations based on the location
   const isEvent = preferences?.eventType ? true : false;
   const isAirport = location.toLowerCase().includes("airport");
+  const isArena = location.toLowerCase().includes("arena") || location.toLowerCase().includes("stadium");
+  const isUBS = location.toLowerCase().includes("ubs");
   
-  if (isAirport) {
+  // Check for specific venue names
+  if (isUBS || (isArena && location.toLowerCase().includes("ubs"))) {
+    return {
+      recommendations: [
+        {
+          location: "UBS Arena Official Parking",
+          description: "Official on-site parking lots at UBS Arena with the closest access to entrance gates.",
+          price: "$30-45/event",
+          features: ["Reserved spaces", "Official venue parking", "Easy in/out access"],
+          distance: "On-site"
+        },
+        {
+          location: "UBS Arena North Lot",
+          description: "Premium parking option with dedicated entrance and exit lanes.",
+          price: "$40/event",
+          features: ["Premium location", "Security staff", "Covered walkway to entrance"],
+          distance: "0.1 miles from arena"
+        },
+        {
+          location: "Belmont Park Commuter Lot",
+          description: "More affordable option with shuttle service to the arena.",
+          price: "$20/event",
+          features: ["Shuttle service", "Security patrols", "Family-friendly"],
+          distance: "0.8 miles from arena"
+        },
+        {
+          location: "Elmont LIRR Station",
+          description: "Park and ride option with train service to the arena.",
+          price: "$10/day",
+          features: ["Public transit access", "Well-lit", "24/7 availability"],
+          distance: "0.5 miles from arena"
+        }
+      ]
+    };
+  } else if (isAirport) {
     return {
       recommendations: [
         {
@@ -387,70 +419,31 @@ function getFallbackRecommendations(
       ]
     };
   } else if (isEvent) {
-    // Check for specific venues like UBS Arena
-    const isArena = location.toLowerCase().includes("arena") || location.toLowerCase().includes("stadium");
-    const isUBS = location.toLowerCase().includes("ubs");
-    
-    if (isUBS || (isArena && location.toLowerCase().includes("ubs"))) {
-      return {
-        recommendations: [
-          {
-            location: "UBS Arena Official Parking",
-            description: "Official on-site parking lots at UBS Arena with the closest access to entrance gates.",
-            price: "$30-45/event",
-            features: ["Reserved spaces", "Official venue parking", "Easy in/out access"],
-            distance: "On-site"
-          },
-          {
-            location: "UBS Arena North Lot",
-            description: "Premium parking option with dedicated entrance and exit lanes.",
-            price: "$40/event",
-            features: ["Premium location", "Security staff", "Covered walkway to entrance"],
-            distance: "0.1 miles from arena"
-          },
-          {
-            location: "Belmont Park Commuter Lot",
-            description: "More affordable option with shuttle service to the arena.",
-            price: "$20/event",
-            features: ["Shuttle service", "Security patrols", "Family-friendly"],
-            distance: "0.8 miles from arena"
-          },
-          {
-            location: "Elmont LIRR Station",
-            description: "Park and ride option with train service to the arena.",
-            price: "$10/day",
-            features: ["Public transit access", "Well-lit", "24/7 availability"],
-            distance: "0.5 miles from arena"
-          }
-        ]
-      };
-    } else {
-      return {
-        recommendations: [
-          {
-            location: `${location} Premium Event Parking`,
-            description: "Closest access to the venue with guaranteed spaces.",
-            price: "$25-40/event",
-            features: ["Reserved spaces", "Express entry/exit", "Walking distance to venue"],
-            distance: "0.2 miles from venue"
-          },
-          {
-            location: `${location} Standard Parking`,
-            description: "Official venue parking at a standard rate.",
-            price: "$15-20/event",
-            features: ["Official venue lot", "Security staff", "Multiple entry/exit points"],
-            distance: "0.5 miles from venue"
-          },
-          {
-            location: `${location} Overflow Parking`,
-            description: "Additional parking options when main lots are full.",
-            price: "$10-15/event",
-            features: ["Shuttle service", "Family-friendly", "Well-lit pathways"],
-            distance: "1.0 miles from venue"
-          }
-        ]
-      };
-    }
+    return {
+      recommendations: [
+        {
+          location: `${location} Premium Event Parking`,
+          description: "Closest access to the venue with guaranteed spaces.",
+          price: "$25-40/event",
+          features: ["Reserved spaces", "Express entry/exit", "Walking distance to venue"],
+          distance: "0.2 miles from venue"
+        },
+        {
+          location: `${location} Standard Parking`,
+          description: "Official venue parking at a standard rate.",
+          price: "$15-20/event",
+          features: ["Official venue lot", "Security staff", "Multiple entry/exit points"],
+          distance: "0.5 miles from venue"
+        },
+        {
+          location: `${location} Overflow Parking`,
+          description: "Additional parking options when main lots are full.",
+          price: "$10-15/event",
+          features: ["Shuttle service", "Family-friendly", "Well-lit pathways"],
+          distance: "1.0 miles from venue"
+        }
+      ]
+    };
   } else {
     return {
       recommendations: [
@@ -534,6 +527,18 @@ export async function generatePersonalizedSuggestions(
           title: "Explore Nearby Parking Options",
           description: "Check out parking spaces available in your most frequently visited areas.",
           reason: "Based on your typical parking patterns"
+        },
+        {
+          type: "event",
+          title: "Event Parking Recommendations",
+          description: "Find the best parking options for upcoming events in your area.",
+          reason: "Tailored to your preferences"
+        },
+        {
+          type: "airport",
+          title: "Airport Parking Options",
+          description: "Discover convenient and affordable airport parking solutions.",
+          reason: "For your next trip"
         }
       ]
     };
