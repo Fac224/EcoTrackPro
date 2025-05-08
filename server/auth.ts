@@ -54,7 +54,7 @@ export function setupAuth(app: Express) {
         }
         
         // Check if this is a test account with a direct password match
-        if (username === "felix_chong" && password === user.password) {
+        if ((username === "felix_chong" || username === "cody_codes") && password === user.password) {
           return done(null, user);
         }
         

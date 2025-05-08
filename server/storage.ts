@@ -377,6 +377,15 @@ export class MemStorage implements IStorage {
       phoneNumber: "555-666-7777",
     };
     
+    // Additional test account for Cody
+    const codyUser: InsertUser = {
+      username: "cody_codes",
+      email: "cody@example.com",
+      password: "123456",  // This will be put through the authentication hash flow
+      name: "Cody Developer",
+      phoneNumber: "555-888-9999",
+    };
+    
     // Create users and their associated driveways
     this.createUser(user1).then(user => {
       // San Francisco featured driveway 1
@@ -475,8 +484,9 @@ export class MemStorage implements IStorage {
       this.createDriveway(urbanGarageDriveway);
     });
     
-    // Create Felix's account
+    // Create test accounts
     this.createUser(felixUser);
+    this.createUser(codyUser);
     
     this.createUser(user4).then(user => {
       // New York featured driveway 2
