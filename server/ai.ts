@@ -293,22 +293,27 @@ export async function generateParkingRecommendations(
     availability?: string;
   }>;
 }> {
-  // Check if OpenAI API key exists or try to use it
-  try {
-    // Craft a prompt for generating parking recommendations
-    let prompt = `Generate realistic and helpful parking recommendations near ${location}.`;
-    
-    if (preferences) {
-      if (preferences.eventType) prompt += ` The user is looking for parking for a ${preferences.eventType}.`;
-      if (preferences.priceRange) prompt += ` Their price range is ${preferences.priceRange}.`;
-      if (preferences.amenities && preferences.amenities.length > 0) {
-        prompt += ` They prefer parking with the following amenities: ${preferences.amenities.join(", ")}.`;
-      }
-      if (preferences.timeNeeded) prompt += ` They need parking for ${preferences.timeNeeded}.`;
-    }
-    
-    prompt += ` Please provide 3-5 specific, realistic recommendations with location names, descriptions, pricing, and features.`;
+  // Check if OpenAI API key exists
+  if (!process.env.OPENAI_API_KEY) {
+    console.log("OpenAI API key not available, using fallback recommendations");
+    return getFallbackRecommendations(location, preferences);
+  }
 
+  // Craft a prompt for generating parking recommendations
+  let prompt = `Generate realistic and helpful parking recommendations near ${location}.`;
+  
+  if (preferences) {
+    if (preferences.eventType) prompt += ` The user is looking for parking for a ${preferences.eventType}.`;
+    if (preferences.priceRange) prompt += ` Their price range is ${preferences.priceRange}.`;
+    if (preferences.amenities && preferences.amenities.length > 0) {
+      prompt += ` They prefer parking with the following amenities: ${preferences.amenities.join(", ")}.`;
+    }
+    if (preferences.timeNeeded) prompt += ` They need parking for ${preferences.timeNeeded}.`;
+  }
+  
+  prompt += ` Please provide 3-5 specific, realistic recommendations with location names, descriptions, pricing, and features.`;
+
+  try {
     const response = await openai.chat.completions.create({
       model: "gpt-4o",
       messages: [
@@ -333,7 +338,6 @@ export async function generateParkingRecommendations(
   }
 }
 
-// Function to provide fallback recommendations when API fails
 function getFallbackRecommendations(
   location: string,
   preferences?: {
@@ -355,117 +359,8 @@ function getFallbackRecommendations(
   // Create standard recommendations based on the location
   const isEvent = preferences?.eventType ? true : false;
   const isAirport = location.toLowerCase().includes("airport");
-  const isArena = location.toLowerCase().includes("arena") || location.toLowerCase().includes("stadium");
-  const isCenter = location.toLowerCase().includes("center") || location.toLowerCase().includes("centre");
-  const isGarden = location.toLowerCase().includes("garden");
   
-  // Check for specific venue names
-  const isUBS = location.toLowerCase().includes("ubs");
-  const isSquare = location.toLowerCase().includes("square");
-  const isMadison = (isSquare && location.toLowerCase().includes("madison")) || location.toLowerCase().includes("msg");
-  const isBarclays = location.toLowerCase().includes("barclays");
-  
-  // UBS Arena specific recommendations
-  if (isUBS || (isArena && location.toLowerCase().includes("ubs"))) {
-    return {
-      recommendations: [
-        {
-          location: "UBS Arena Official Parking",
-          description: "Official on-site parking lots at UBS Arena with the closest access to entrance gates.",
-          price: "$30-45/event",
-          features: ["Reserved spaces", "Official venue parking", "Easy in/out access"],
-          distance: "On-site"
-        },
-        {
-          location: "UBS Arena North Lot",
-          description: "Premium parking option with dedicated entrance and exit lanes.",
-          price: "$40/event",
-          features: ["Premium location", "Security staff", "Covered walkway to entrance"],
-          distance: "0.1 miles from arena"
-        },
-        {
-          location: "Belmont Park Commuter Lot",
-          description: "More affordable option with shuttle service to the arena.",
-          price: "$20/event",
-          features: ["Shuttle service", "Security patrols", "Family-friendly"],
-          distance: "0.8 miles from arena"
-        },
-        {
-          location: "Elmont LIRR Station",
-          description: "Park and ride option with train service to the arena.",
-          price: "$10/day",
-          features: ["Public transit access", "Well-lit", "24/7 availability"],
-          distance: "0.5 miles from arena"
-        }
-      ]
-    };
-  } else if (isMadison || (isSquare && location.toLowerCase().includes("madison")) || location.toLowerCase().includes("msg")) {
-    return {
-      recommendations: [
-        {
-          location: "MSG Official Garage",
-          description: "Madison Square Garden's official parking facility directly connected to the arena.",
-          price: "$45-65/event",
-          features: ["Direct arena access", "Pre-purchase available", "Covered parking"],
-          distance: "Connected to venue"
-        },
-        {
-          location: "34th Street Garage",
-          description: "Convenient parking near Madison Square Garden with multiple entry/exit points.",
-          price: "$35-50/event",
-          features: ["24/7 security", "Advanced reservations", "EV charging stations"],
-          distance: "0.2 miles from venue"
-        },
-        {
-          location: "Penn Station Parking",
-          description: "Secure underground parking with easy access to Madison Square Garden.",
-          price: "$25-40/event",
-          features: ["Underground facility", "Well-lit", "Multiple payment options"],
-          distance: "0.3 miles from venue"
-        },
-        {
-          location: "Chelsea Parking",
-          description: "More affordable option within walking distance to MSG.",
-          price: "$20-30/event",
-          features: ["Affordable rates", "Spacious spots", "Multiple entrances"],
-          distance: "0.5 miles from venue"
-        }
-      ]
-    };
-  } else if (isBarclays || (isCenter && location.toLowerCase().includes("barclays"))) {
-    return {
-      recommendations: [
-        {
-          location: "Barclays Center Official Parking",
-          description: "Official on-site parking at Barclays Center with the most convenient access.",
-          price: "$40-55/event",
-          features: ["Connected to venue", "Reserved spaces", "Security staff"],
-          distance: "On-site"
-        },
-        {
-          location: "Atlantic Terminal Garage",
-          description: "Covered parking adjacent to Barclays Center with easy access.",
-          price: "$35-45/event",
-          features: ["Covered parking", "Pre-pay options", "Security cameras"],
-          distance: "0.1 miles from venue"
-        },
-        {
-          location: "Fort Greene Parking",
-          description: "More affordable parking option near Barclays Center.",
-          price: "$25-35/event",
-          features: ["Well-lit", "Local business discount", "Weekend availability"],
-          distance: "0.4 miles from venue"
-        },
-        {
-          location: "LIRR/Subway Adjacent Lot",
-          description: "Convenient parking with public transit options nearby.",
-          price: "$20-30/event",
-          features: ["Public transit access", "Extended hours", "Attendant on duty"],
-          distance: "0.5 miles from venue"
-        }
-      ]
-    };
-  } else if (isAirport) {
+  if (isAirport) {
     return {
       recommendations: [
         {
@@ -600,18 +495,6 @@ export async function generatePersonalizedSuggestions(
           title: "Explore Nearby Parking Options",
           description: "Check out parking spaces available in your most frequently visited areas.",
           reason: "Based on your typical parking patterns"
-        },
-        {
-          type: "event",
-          title: "Event Parking Recommendations",
-          description: "Find the best parking options for upcoming events in your area.",
-          reason: "Tailored to your preferences"
-        },
-        {
-          type: "airport",
-          title: "Airport Parking Options",
-          description: "Discover convenient and affordable airport parking solutions.",
-          reason: "For your next trip"
         }
       ]
     };
