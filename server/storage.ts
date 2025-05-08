@@ -1,8 +1,13 @@
 import { driveways, users, bookings, reviews, type User, type InsertUser, type Driveway, type InsertDriveway, type Booking, type InsertBooking, type Review, type InsertReview } from "@shared/schema";
 import { z } from "zod";
+import session from "express-session";
+import createMemoryStore from "memorystore";
 
 // Storage interface
 export interface IStorage {
+  // Session store for authentication
+  sessionStore: session.Store;
+  
   // User methods
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
@@ -48,6 +53,7 @@ export class MemStorage implements IStorage {
   private currentDrivewayId: number;
   private currentBookingId: number;
   private currentReviewId: number;
+  readonly sessionStore: session.Store;
 
   constructor() {
     this.users = new Map();
@@ -58,6 +64,12 @@ export class MemStorage implements IStorage {
     this.currentDrivewayId = 1;
     this.currentBookingId = 1;
     this.currentReviewId = 1;
+    
+    // Create session store
+    const SessionStore = createMemoryStore(session);
+    this.sessionStore = new SessionStore({
+      checkPeriod: 86400000 // prune expired entries every 24h
+    });
     
     // Add some sample data
     this.initializeSampleData();

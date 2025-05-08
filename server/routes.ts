@@ -1,4 +1,4 @@
-import type { Express, Request, Response } from "express";
+import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { ZodError, z } from "zod";
@@ -17,37 +17,19 @@ import {
   AIFeatureType
 } from "./ai";
 import { handleParkingQuery } from "./parkingPredictor";
-import session from "express-session";
-import MemoryStore from "memorystore";
-
-// Set up session middleware
-const createSessionMiddleware = (app: Express) => {
-  const SessionStore = MemoryStore(session);
-  app.use(session({
-    secret: 'parkshare-session-secret',
-    resave: false,
-    saveUninitialized: false,
-    cookie: { 
-      secure: process.env.NODE_ENV === 'production', 
-      maxAge: 1000 * 60 * 60 * 24, // 24 hours
-    },
-    store: new SessionStore({
-      checkPeriod: 86400000 // prune expired entries every 24h
-    })
-  }));
-};
+import { setupAuth } from "./auth";
 
 // Authentication middleware
-const isAuthenticated = (req: Request, res: Response, next: Function) => {
-  if (req.session && req.session.userId) {
+const isAuthenticated = (req: Request, res: Response, next: NextFunction) => {
+  if (req.isAuthenticated()) {
     return next();
   }
   return res.status(401).json({ message: "Not authenticated" });
 };
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Set up session
-  createSessionMiddleware(app);
+  // Set up authentication with Passport
+  setupAuth(app);
   
   // Create HTTP server
   const httpServer = createServer(app);
@@ -60,96 +42,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   };
 
-  // User routes
-  app.post("/api/register", async (req, res) => {
-    try {
-      const userData = insertUserSchema.parse(req.body);
-      
-      // Check if username or email already exists
-      const existingUserByUsername = await storage.getUserByUsername(userData.username);
-      if (existingUserByUsername) {
-        return res.status(400).json({ message: "Username already taken" });
-      }
-      
-      const existingUserByEmail = await storage.getUserByEmail(userData.email);
-      if (existingUserByEmail) {
-        return res.status(400).json({ message: "Email already registered" });
-      }
-      
-      // Create new user
-      const user = await storage.createUser(userData);
-      
-      // Remove password from response
-      const { password, ...userWithoutPassword } = user;
-      
-      // Log the user in
-      req.session.userId = user.id;
-      
-      return res.status(201).json(userWithoutPassword);
-    } catch (error) {
-      if (error instanceof ZodError) {
-        return handleZodError(error, res);
-      }
-      return res.status(500).json({ message: "Failed to register user" });
-    }
-  });
+  // User routes are now handled by auth.ts
 
-  app.post("/api/login", async (req, res) => {
-    try {
-      const loginData = loginSchema.parse(req.body);
-      
-      // Find user by username
-      const user = await storage.getUserByUsername(loginData.username);
-      if (!user) {
-        return res.status(401).json({ message: "Invalid username or password" });
-      }
-      
-      // Check password
-      if (user.password !== loginData.password) {
-        return res.status(401).json({ message: "Invalid username or password" });
-      }
-      
-      // Set user in session
-      req.session.userId = user.id;
-      
-      // Remove password from response
-      const { password, ...userWithoutPassword } = user;
-      
-      return res.status(200).json(userWithoutPassword);
-    } catch (error) {
-      if (error instanceof ZodError) {
-        return handleZodError(error, res);
-      }
-      return res.status(500).json({ message: "Failed to login" });
-    }
-  });
-
-  app.get("/api/me", isAuthenticated, async (req, res) => {
-    try {
-      const userId = req.session.userId;
-      const user = await storage.getUser(userId as number);
-      
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
-      
-      // Remove password from response
-      const { password, ...userWithoutPassword } = user;
-      
-      return res.status(200).json(userWithoutPassword);
-    } catch (error) {
-      return res.status(500).json({ message: "Failed to get user data" });
-    }
-  });
-
-  app.post("/api/logout", (req, res) => {
-    req.session.destroy((err) => {
-      if (err) {
-        return res.status(500).json({ message: "Failed to logout" });
-      }
-      res.clearCookie('connect.sid');
-      return res.status(200).json({ message: "Logged out successfully" });
-    });
+  // Renamed /api/me to /api/user to match auth.ts implementation 
+  app.get("/api/me", isAuthenticated, (req, res) => {
+    // We can redirect to the /api/user handler in auth.ts
+    const { password, ...userWithoutPassword } = req.user;
+    return res.status(200).json(userWithoutPassword);
   });
 
   // Driveway routes
@@ -204,7 +103,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const drivewayData = insertDrivewaySchema.parse(req.body);
       
       // Assign current user as owner
-      drivewayData.ownerId = req.session.userId as number;
+      drivewayData.ownerId = req.user.id;
       
       const driveway = await storage.createDriveway(drivewayData);
       return res.status(201).json(driveway);
@@ -275,7 +174,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/my-driveways", isAuthenticated, async (req, res) => {
     try {
-      const userId = req.session.userId as number;
+      const userId = req.user.id;
       const driveways = await storage.getDrivewaysByOwner(userId);
       return res.status(200).json(driveways);
     } catch (error) {
