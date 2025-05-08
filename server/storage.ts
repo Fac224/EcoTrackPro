@@ -469,7 +469,7 @@ export class MemStorage implements IStorage {
         availabilityEndTime: "21:00",
         availableWeekdays: "0,1,2,3,4,5,6",
         isActive: true,
-        imageUrl: "/src/assets/images/ny_driveway2.jpg",
+        imageUrl: "https://media-hosting.imagekit.io/409297b5d2854acf/Screenshot%202025-05-07%20at%208.26.20%E2%80%AFPM.png?Expires=1841271987&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=wyHkVAwX5GgeyFLOYBWS6irxLhhe-i6Rqo~q0KAeLzs3ZHr5meZxi~zhwHifvbDqTXNfrs5aDBoZx~k5yjTdj6oAf0DQq3sAMytd397YO9GuQv8OiOotB~3lJDShCkcBhLG-Elxb1dFV6LzuCHvoyrRBmcNxyhzv94nWsjpJkaMT8boKITQvzKlxap-BltIgPDjN2nJA9uhTgqNkric9NqmAGD8epWxxwtiq3vRUkna2gkIiKV0CDI80Lp2EeQqUg5LSHFZxLv4rq6XvXtxenJEbKK~gCnKtML0y-GFCZUO7Afr2sY22uJQ5W0Gd5wOfs8gXbFLeLF3nwpVEMn6JtQ__",
         amenities: "Gated,Security cameras,Wide space,Well lit",
         rating: 4.9,
         ratingCount: 38
@@ -490,7 +490,7 @@ export class MemStorage implements IStorage {
         availabilityEndTime: "23:00",
         availableWeekdays: "0,1,2,3,4,5,6",
         isActive: true,
-        imageUrl: "/src/assets/images/ny_driveway3.jpg",
+        imageUrl: "https://media-hosting.imagekit.io/1021f5dcddb54ea0/Screenshot%202025-05-07%20at%208.28.09%E2%80%AFPM.png?Expires=1841272098&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=rxbUwWo~wqqJdahz1~Uqhdk3E2gmb-g9nEZM-rFlqxMqUE2GcWOxVCWX5LHNFoFYMVLw9cnCVBRTVFXGmRiCa-YxXUSwfjkl8TlX5AzbZhRmGL1P~PJpwKDd~C4ago1BgyyspWwT4siHUjYT~Zn6se7ioq5gB9w2ocJjiMabS1K5ZxUPHwmsqK5lOgkBXLdh4YREDD-9C0667Baago-S-64mobyRtofEmOoXuFJYhpEh2WXd9W6~LfGFFQ-upkugo6OY8oKPC8cE1EGQjxr2wJZRirNqLrKLjjEc6RAaTugr4bhZiVVMlRdBzSiageSaiVtHMl2uMHS3~tTPfWGs4g__",
         amenities: "Residential area,Near subway,Well lit",
         rating: 4.6,
         ratingCount: 29
