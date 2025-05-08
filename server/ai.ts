@@ -356,9 +356,16 @@ function getFallbackRecommendations(
   const isEvent = preferences?.eventType ? true : false;
   const isAirport = location.toLowerCase().includes("airport");
   const isArena = location.toLowerCase().includes("arena") || location.toLowerCase().includes("stadium");
-  const isUBS = location.toLowerCase().includes("ubs");
+  const isCenter = location.toLowerCase().includes("center") || location.toLowerCase().includes("centre");
+  const isGarden = location.toLowerCase().includes("garden");
   
   // Check for specific venue names
+  const isUBS = location.toLowerCase().includes("ubs");
+  const isSquare = location.toLowerCase().includes("square");
+  const isMadison = (isSquare && location.toLowerCase().includes("madison")) || location.toLowerCase().includes("msg");
+  const isBarclays = location.toLowerCase().includes("barclays");
+  
+  // UBS Arena specific recommendations
   if (isUBS || (isArena && location.toLowerCase().includes("ubs"))) {
     return {
       recommendations: [
@@ -389,6 +396,72 @@ function getFallbackRecommendations(
           price: "$10/day",
           features: ["Public transit access", "Well-lit", "24/7 availability"],
           distance: "0.5 miles from arena"
+        }
+      ]
+    };
+  } else if (isMadison || (isSquare && location.toLowerCase().includes("madison")) || location.toLowerCase().includes("msg")) {
+    return {
+      recommendations: [
+        {
+          location: "MSG Official Garage",
+          description: "Madison Square Garden's official parking facility directly connected to the arena.",
+          price: "$45-65/event",
+          features: ["Direct arena access", "Pre-purchase available", "Covered parking"],
+          distance: "Connected to venue"
+        },
+        {
+          location: "34th Street Garage",
+          description: "Convenient parking near Madison Square Garden with multiple entry/exit points.",
+          price: "$35-50/event",
+          features: ["24/7 security", "Advanced reservations", "EV charging stations"],
+          distance: "0.2 miles from venue"
+        },
+        {
+          location: "Penn Station Parking",
+          description: "Secure underground parking with easy access to Madison Square Garden.",
+          price: "$25-40/event",
+          features: ["Underground facility", "Well-lit", "Multiple payment options"],
+          distance: "0.3 miles from venue"
+        },
+        {
+          location: "Chelsea Parking",
+          description: "More affordable option within walking distance to MSG.",
+          price: "$20-30/event",
+          features: ["Affordable rates", "Spacious spots", "Multiple entrances"],
+          distance: "0.5 miles from venue"
+        }
+      ]
+    };
+  } else if (isBarclays || (isCenter && location.toLowerCase().includes("barclays"))) {
+    return {
+      recommendations: [
+        {
+          location: "Barclays Center Official Parking",
+          description: "Official on-site parking at Barclays Center with the most convenient access.",
+          price: "$40-55/event",
+          features: ["Connected to venue", "Reserved spaces", "Security staff"],
+          distance: "On-site"
+        },
+        {
+          location: "Atlantic Terminal Garage",
+          description: "Covered parking adjacent to Barclays Center with easy access.",
+          price: "$35-45/event",
+          features: ["Covered parking", "Pre-pay options", "Security cameras"],
+          distance: "0.1 miles from venue"
+        },
+        {
+          location: "Fort Greene Parking",
+          description: "More affordable parking option near Barclays Center.",
+          price: "$25-35/event",
+          features: ["Well-lit", "Local business discount", "Weekend availability"],
+          distance: "0.4 miles from venue"
+        },
+        {
+          location: "LIRR/Subway Adjacent Lot",
+          description: "Convenient parking with public transit options nearby.",
+          price: "$20-30/event",
+          features: ["Public transit access", "Extended hours", "Attendant on duty"],
+          distance: "0.5 miles from venue"
         }
       ]
     };

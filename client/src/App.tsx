@@ -10,6 +10,7 @@ import ListDriveway from "@/pages/ListDriveway";
 import Search from "@/pages/Search";
 import DrivewayDetails from "@/pages/DrivewayDetails";
 import BookingPage from "@/pages/BookingPage";
+import TestVenueParking from "@/pages/TestVenueParking";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
@@ -50,6 +51,7 @@ function App() {
         <Route path="/search" component={Search} />
         <Route path="/driveways/:id" component={DrivewayDetails} />
         <Route path="/book/:id" component={BookingPage} />
+        <Route path="/test-venue-parking" component={TestVenueParking} />
         <Route component={NotFound} />
       </Switch>
     </TooltipProvider>
