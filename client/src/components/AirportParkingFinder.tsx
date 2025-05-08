@@ -485,7 +485,7 @@ export function AirportParkingFinder({ className }: AirportParkingFinderProps) {
                   height="100%" 
                   frameBorder="0" 
                   style={{ border: 0 }} 
-                  src={`https://www.google.com/maps/embed/v1/place?key=${process.env.GOOGLE_MAPS_API_KEY || 'YOUR_API_KEY'}&q=${encodeURIComponent(selectedLocation.location)}&zoom=14`} 
+                  src={`https://www.google.com/maps/embed/v1/place?key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY || 'AIzaSyAanMM_SHlW67y28F-0wAeGWDJ40ocn16A'}&q=${encodeURIComponent(selectedLocation.location)}&zoom=14`} 
                   allowFullScreen
                 />
               </div>
