@@ -47,8 +47,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Renamed /api/me to /api/user to match auth.ts implementation 
   app.get("/api/me", isAuthenticated, (req, res) => {
     // We can redirect to the /api/user handler in auth.ts
-    const { password, ...userWithoutPassword } = req.user;
-    return res.status(200).json(userWithoutPassword);
+    if (req.user) {
+      const { password, ...userWithoutPassword } = req.user;
+      return res.status(200).json(userWithoutPassword);
+    }
+    return res.status(401).json({ message: "Not authenticated" });
   });
 
   // Driveway routes
@@ -103,6 +106,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const drivewayData = insertDrivewaySchema.parse(req.body);
       
       // Assign current user as owner
+      if (!req.user) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
       drivewayData.ownerId = req.user.id;
       
       const driveway = await storage.createDriveway(drivewayData);
@@ -250,7 +256,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Verify ownership
-      if (driveway.ownerId !== req.session.userId) {
+      if (driveway.ownerId !== req.user.id) {
         return res.status(403).json({ message: "Not authorized to view bookings for this driveway" });
       }
       
@@ -272,7 +278,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Only the driveway owner can update booking status
       const driveway = await storage.getDriveway(booking.drivewayId);
-      if (driveway?.ownerId !== req.session.userId) {
+      if (driveway?.ownerId !== req.user.id) {
         return res.status(403).json({ message: "Not authorized to update this booking" });
       }
       
@@ -298,7 +304,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Only the user who made the booking can cancel it
-      if (booking.userId !== req.session.userId) {
+      if (booking.userId !== req.user.id) {
         return res.status(403).json({ message: "Not authorized to cancel this booking" });
       }
       
@@ -368,19 +374,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Get user context if authenticated
       let userContext;
       let userId = undefined;
-      if (req.session && req.session.userId) {
-        userId = req.session.userId as number;
+      if (req.isAuthenticated() && req.user) {
+        userId = req.user.id;
         try {
-          const user = await storage.getUser(userId);
           const userBookings = await storage.getUserBookings(userId);
           
-          if (user) {
-            userContext = {
-              username: user.username,
-              userId: user.id,
-              pastBookings: userBookings.length,
-            };
-          }
+          userContext = {
+            username: req.user.username,
+            userId: req.user.id,
+            pastBookings: userBookings.length,
+          };
         } catch (error) {
           console.error("Error getting user context:", error);
         }
@@ -515,8 +518,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Get user ID if authenticated
       let userId = undefined;
-      if (req.session && req.session.userId) {
-        userId = req.session.userId as number;
+      if (req.isAuthenticated() && req.user) {
+        userId = req.user.id;
       }
       
       const response = await handleParkingQuery(query, userId);
