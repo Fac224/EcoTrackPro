@@ -44,9 +44,12 @@ export function DrivewayCard({ driveway, showBookButton = true }: DrivewayCardPr
         {driveway.imageUrl ? (
           <img 
             src={driveway.imageUrl}
-            alt={`Driveway at ${driveway.address}`} 
+            alt={`Driveway at ${driveway.address}`}
+            loading="eager"
+            crossOrigin="anonymous" 
             className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
             onError={(e) => {
+              console.log(`Image failed to load: ${driveway.imageUrl}`);
               // If image fails to load, show fallback
               (e.target as HTMLImageElement).onerror = null;
               (e.target as HTMLImageElement).style.display = 'none';
