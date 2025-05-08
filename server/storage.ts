@@ -372,7 +372,7 @@ export class MemStorage implements IStorage {
         availabilityEndTime: "22:00",
         availableWeekdays: "0,1,2,3,4,5,6",
         isActive: true,
-        imageUrl: "/src/assets/images/sf_driveway1.jpg",
+        imageUrl: "https://media-hosting.imagekit.io/06d6059931544c07/Screenshot%202025-05-07%20at%208.11.55%E2%80%AFPM.png?Expires=1841271123&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=tbv6HlyqJhe63Kgj13EHo8BqqM4hFagDXhcN2w4xAruMYGMAl3leSAJpIHvr52zPiC4kncJ-BnHdorefi~l3NmMfQ96sQdvpNL3~tTN3dNiS9LgY7d4SzxUBpHbyZGHzOJ9GKBlGlKF4eA2yOfmINMXWx3UoQUJWIqEN-QrJxvb-L1jY59cfaQzHZsZDkL5SX5tjXwX5VzplHDe5Kdb3UF-jTwW62iKzRNO0ivxuZEUDaMCO5RilmQGFq7vHtgiXkUKL2Hghhz-3LsPlxYgLXzwdm~pFEY-u6M83-SuIjjp0PHpRgOnTiyRDq75Hqc6zIqkr6drHFtUvCw2Igvqm2w__",
         amenities: "Security cameras,Well lit,Covered,Wide space",
         rating: 4.9,
         ratingCount: 27
@@ -385,19 +385,19 @@ export class MemStorage implements IStorage {
       // San Francisco featured driveway 2
       const sfDriveway2: InsertDriveway = {
         ownerId: user.id,
-        address: "847 Pine Avenue",
+        address: "432 Maple Street",
         city: "San Francisco",
         state: "CA",
-        zipCode: "94108",
-        latitude: 37.7912,
-        longitude: -122.4100,
+        zipCode: "94103",
+        latitude: 37.7740,
+        longitude: -122.4200,
         priceHourly: 8.50,
-        description: "Downtown Pine Avenue parking spot, perfect for shoppers. Located near Union Square and high-end shopping.",
+        description: "Maple Street parking spot, perfect for shoppers. Located near popular shopping districts with easy access to public transportation.",
         availabilityStartTime: "06:00",
         availabilityEndTime: "20:00",
         availableWeekdays: "1,2,3,4,5",
         isActive: true,
-        imageUrl: "/src/assets/images/sf_driveway2.jpg",
+        imageUrl: "https://media-hosting.imagekit.io/7cb01f7004824a8b/Screenshot%202025-05-07%20at%208.06.02%E2%80%AFPM.png?Expires=1841270772&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=IrqPJl03aLpQOFstRVFz2QFeyz-QRRzkgOZbxFV00MQ112tdDPCkJZADnhH8qgyG-LataWrN-Dc~pnP169-ODNOxNJ7wMZSi6AgpJywNNDzJ99eGjkNJxyHThVABTbzAIBEuk1k1aaOXFJMv6KAf5EVPbJKIkckEnVuIS5k7tL6320ZvrZD8vY7bGLApf-q2yO7daMd-qRlhPiiO8ZCjTrpQ6YTqSmH6CfaeWtqJX2alRoFGhBBg39rHArctRgBtISsRdHJW6TuEY7C8muxjLRu06S6DSGmN3Jh~7mS5SKTHQiYKRtLjikzUyOWNudyxbCr12X91dqCHwNXw~4JZpQ__",
         amenities: "Well lit,Near public transport,EV charging",
         rating: 4.7,
         ratingCount: 43
@@ -406,19 +406,19 @@ export class MemStorage implements IStorage {
       // San Francisco featured driveway 3
       const sfDriveway3: InsertDriveway = {
         ownerId: user.id,
-        address: "789 Haight St",
+        address: "847 Pine Avenue",
         city: "San Francisco",
         state: "CA",
-        zipCode: "94117",
-        latitude: 37.7694,
-        longitude: -122.4512,
-        priceHourly: 5.50,
-        description: "Haight-Ashbury neighborhood parking spot. Great for visitors to Golden Gate Park or local shops and restaurants.",
+        zipCode: "94108",
+        latitude: 37.7920,
+        longitude: -122.4083,
+        priceHourly: 7.50,
+        description: "Prime Pine Avenue parking spot in downtown. Excellent location for visitors to Union Square, Financial District, and Chinatown.",
         availabilityStartTime: "08:00",
         availabilityEndTime: "23:00",
         availableWeekdays: "0,1,2,3,4,5,6",
         isActive: true,
-        imageUrl: "/src/assets/images/sf_driveway3.jpg",
+        imageUrl: "https://media-hosting.imagekit.io/aebff09f96474fa7/Screenshot%202025-05-07%20at%208.13.08%E2%80%AFPM.png?Expires=1841271197&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=G-9IPw9nZLvVivDdAokPrF8J1Fg81cqk8kYtpcvbFWNFZ3qJysUjqljjIDnrmA5iyMcCwlRFLr62RqYVGGvOBxiRxfoePuyXzzl6i5ImkpU7J8d~GivZ7dNDtFpuUC4SaXeXqTXgDGamQqd~UXvaddXnU-ba6Zmi5kRWIw3y1QZ5BlvroFz0mJFHewu8nEhevlVnbubbIW2SfZpauAYNUADRW76Jg3mOFu1PnVqgSGkB7IdHH-G1M01WJ7PRJRSDp2FsksjI2durhzPlC9ho~yQ6hQiam941zKJY71OlxofaBBwOFFqRU1A~zKBP75F1b9hzjPZB5GUQOkci3tv5~A__",
         amenities: "Residential area,Wide space,Pet-friendly",
         rating: 4.5,
         ratingCount: 19
@@ -429,28 +429,28 @@ export class MemStorage implements IStorage {
     });
     
     this.createUser(user3).then(user => {
-      // New York featured driveway 1
-      const nyDriveway1: InsertDriveway = {
+      // Urban Garage Entry driveway
+      const urbanGarageDriveway: InsertDriveway = {
         ownerId: user.id,
-        address: "123 W 42nd St",
-        city: "New York",
-        state: "NY",
-        zipCode: "10036",
-        latitude: 40.7562,
-        longitude: -73.9867,
+        address: "1722 Market Street, Unit G",
+        city: "San Francisco",
+        state: "CA",
+        zipCode: "94102",
+        latitude: 37.7734,
+        longitude: -122.4220,
         priceHourly: 12.00,
-        description: "Times Square area premium parking spot. Perfect for Broadway shows and Midtown attractions.",
+        description: "Urban garage entry in Market Street area. Perfect for downtown visitors with 24/7 security and camera monitoring.",
         availabilityStartTime: "08:00",
         availabilityEndTime: "23:59",
         availableWeekdays: "0,1,2,3,4,5,6",
         isActive: true,
-        imageUrl: "/src/assets/images/ny_driveway1.jpg",
+        imageUrl: "https://media-hosting.imagekit.io/6800d73188a54589/Screenshot%202025-05-07%20at%208.10.02%E2%80%AFPM.png?Expires=1841271014&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=XMHGkpTLnLV15l0kUJrsZkLwreTCRnyrNNuTsljNkyZGIfKcWDHRqok0X2xhCJZCP3VrTPKTWQ1UtjB4xELclFpYJyODD3e2Uz~dMjX7808vPbxXy3BOO0kdh79IqKcdTFKcQYSDuv3bzu9LmWI~4pvbPbRTDM2faUqeSMKHK0BaBRqwRuglh-IaLlVba9L6Sy~WjIxHNfmQ4aajsuVpU0~Oo64wQW1hxW1nu7-74JCJgwsQDycnVLwikUY7fNwAmUQxkvUO5maT6iqZWnHolyCASZXVhpZJyQIBeHxl6bDrD2HEO~Ef8vHVxAA6NPctN9ynr0yvIyLSJCflwXNiuw__",
         amenities: "Security cameras,Well lit,24/7 access,Covered",
         rating: 4.8,
         ratingCount: 52
       };
       
-      this.createDriveway(nyDriveway1);
+      this.createDriveway(urbanGarageDriveway);
     });
     
     this.createUser(user4).then(user => {
