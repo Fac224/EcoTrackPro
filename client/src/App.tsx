@@ -10,34 +10,8 @@ import ListDriveway from "@/pages/ListDriveway";
 import Search from "@/pages/Search";
 import DrivewayDetails from "@/pages/DrivewayDetails";
 import BookingPage from "@/pages/BookingPage";
-import { useQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
-import { useToast } from "@/hooks/use-toast";
 
 function App() {
-  const [isLoading, setIsLoading] = useState(true);
-  const { toast } = useToast();
-
-  // Check if user is logged in
-  const { data: user, error } = useQuery({
-    queryKey: ['/api/me'],
-    retry: false,
-    refetchOnWindowFocus: false,
-  });
-
-  useEffect(() => {
-    setIsLoading(false);
-    
-    if (error) {
-      // User is not logged in, but we don't need to show an error
-      // as we already handle authentication in the routes
-    }
-  }, [error]);
-
-  if (isLoading) {
-    return <div className="flex justify-center items-center h-screen">Loading...</div>;
-  }
-
   return (
     <TooltipProvider>
       <Toaster />
